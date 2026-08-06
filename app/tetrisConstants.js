@@ -1,7 +1,7 @@
 /**/
-
+const { ZXColor } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxColor.js?ver=' + window.srcVersion);
 /*/
-
+import ZXColor from './svision/js/platform/canvas2D/zxSpectrum/zxColor.js';
 /**/
 // begin code
 
@@ -12,5 +12,15 @@ export const TetrisConstants = {
   BOARD_ROWS: 20,
   DROP_DELAY_MS: 300,
 };
+
+export const TETROMINOES_DATA = [
+  { shape: [[0, 0], [1, 0], [2, 0], [3, 0]], color: ZXColor.brightYellow, x: 1, y: 1 }, // I
+  { shape: [[0, 0], [1, 0], [0, 1], [1, 1]], color: ZXColor.brightRed, x: 6, y: 1 }, // O
+  { shape: [[1, 0], [0, 1], [1, 1], [2, 1]], color: ZXColor.brightCyan, x: 1, y: 4 }, // T
+  { shape: [[1, 0], [2, 0], [0, 1], [1, 1]], color: ZXColor.brightMagenta, x: 6, y: 4 },// S
+  { shape: [[0, 0], [1, 0], [1, 1], [2, 1]], color: ZXColor.brightGreen, x: 1, y: 8 }, // Z
+  { shape: [[0, 0], [0, 1], [1, 1], [2, 1]], color: ZXColor.brightBlue, x: 6, y: 8 }, // J
+  { shape: [[2, 0], [0, 1], [1, 1], [2, 1]], color: ZXColor.brightWhite, x: 1, y: 12 }, // L
+];
 
 export default TetrisConstants;

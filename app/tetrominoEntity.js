@@ -11,35 +11,34 @@ import TetrisConstants from './tetrisConstants.js';
 
 export class TetrominoEntity extends AbstractEntity {
   constructor(parent, x, y, shapeCoords, color) {
-    var isInteractive = false;
-    var blockSize = TetrisConstants.BLOCK_SIZE;
-    var subSize = blockSize - TetrisConstants.GRID_LINE_WIDTH;
+    const isInteractive = false;
+    const blockSize = TetrisConstants.BLOCK_SIZE;
+    const subSize = blockSize - TetrisConstants.GRID_LINE_WIDTH;
 
-    var maxCol = 0;
-    var maxRow = 0;
+    let maxCol = 0;
+    let maxRow = 0;
     shapeCoords.forEach((coord) => {
       if (coord[0] > maxCol) maxCol = coord[0];
       if (coord[1] > maxRow) maxRow = coord[1];
     });
 
-    var posX = x * blockSize;
-    var posY = y * blockSize;
-    var width = (maxCol + 1) * blockSize;
-    var height = (maxRow + 1) * blockSize;
+    const posX = x * blockSize;
+    const posY = y * blockSize;
+    const width = (maxCol + 1) * blockSize;
+    const height = (maxRow + 1) * blockSize;
 
     super(parent, posX, posY, width, height, isInteractive, ZXColor.brightBlack);
 
     this.gridX = x;
     this.gridY = y;
-
     this.shapeCoords = shapeCoords;
     this.color = color;
     this.blocks = [];
 
     shapeCoords.forEach((coord) => {
-      var blockX = coord[0] * blockSize;
-      var blockY = coord[1] * blockSize;
-      var block = new AbstractEntity(this, blockX, blockY, subSize, subSize, isInteractive, color);
+      const blockX = coord[0] * blockSize;
+      const blockY = coord[1] * blockSize;
+      const block = new AbstractEntity(this, blockX, blockY, subSize, subSize, isInteractive, color);
       this.blocks.push(block);
       this.addEntity(block);
     });

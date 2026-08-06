@@ -9,7 +9,7 @@ import ZXColor from './svision/js/platform/canvas2D/zxSpectrum/zxColor.js';
 
 export class TetrisBoardEntity extends AbstractEntity {
   constructor(parent, x, y, width, height) {
-    var isInteractive = false;
+    const isInteractive = false;
     super(parent, x, y, width, height, isInteractive, ZXColor.black);
   } // constructor
 } // TetrisBoardEntity
