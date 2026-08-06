@@ -1,21 +1,22 @@
 /**/
-const { MainApp } = await import('./mainApp.js?ver='+window.srcVersion);
-const { appPlatform } = await import('./appPlatform.js?ver='+window.srcVersion);
+const { GameApp } = await import('./gameApp.js?ver=' + window.srcVersion);
+const { appPlatform } = await import('./appPlatform.js?ver=' + window.srcVersion);
 /*/
-import MainApp from './mainApp.js';
+import GameApp from './gameApp.js';
 import appPlatform from './appPlatform.js';
 /**/
 // begin code
 
-var mainApp = new MainApp(appPlatform(), window.importPath, window.wsURL);
+var gameApp = new GameApp(appPlatform(), window.importPath, window.wsURL, window.devModeName, window.appIconSprite);
 
 function loopGame(timestamp) {
-  mainApp.loopApp(timestamp);
+  gameApp.loopApp(timestamp);
   requestAnimationFrame(loopGame);
 } // loopGame
 
-window.addEventListener('resize', (event) => mainApp.eventResizeWindow(event));
+// events processing
+window.addEventListener('resize', (event) => gameApp.eventResizeWindow(event));
 
-// start application
-mainApp.resizeApp();
+// start game
+gameApp.eventResizeWindow(null);
 requestAnimationFrame(loopGame);

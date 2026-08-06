@@ -1,5 +1,5 @@
 /**/
-const { ZXSpectrumPlatform } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxSpectrumPlatform.js?ver='+window.srcVersion);
+const { ZXSpectrumPlatform } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxSpectrumPlatform.js?ver=' + window.srcVersion);
 /*/
 import ZXSpectrumPlatform from './svision/js/platform/canvas2D/zxSpectrum/zxSpectrumPlatform.js';
 /**/
