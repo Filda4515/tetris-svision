@@ -1,0 +1,3 @@
+[submodule "app/svision"]
+	path = app/svision
+	url = https://github.com/mitrenga/svision
