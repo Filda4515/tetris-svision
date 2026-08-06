@@ -43,6 +43,37 @@ export class TetrominoEntity extends AbstractEntity {
       this.addEntity(block);
     });
   } // constructor
+
+  getRotatedShape() {
+    // [x, y] -> [-y, x]
+    const rotated = this.shapeCoords.map((coord) => [-coord[1], coord[0]]);
+
+    let minX = Math.min(...rotated.map((c) => c[0]));
+    let minY = Math.min(...rotated.map((c) => c[1]));
+    
+    return rotated.map((c) => [c[0] - minX, c[1] - minY]);
+  } // getRotatedShape
+
+  updateShape(newShapeCoords) {
+    this.shapeCoords = newShapeCoords;
+
+    let maxCol = 0;
+    let maxRow = 0;
+    newShapeCoords.forEach((coord) => {
+      if (coord[0] > maxCol) maxCol = coord[0];
+      if (coord[1] > maxRow) maxRow = coord[1];
+    });
+
+    this.width = (maxCol + 1) * TetrisConstants.BLOCK_SIZE;
+    this.height = (maxRow + 1) * TetrisConstants.BLOCK_SIZE;
+
+    newShapeCoords.forEach((coord, index) => {
+      if (this.blocks[index]) {
+        this.blocks[index].x = coord[0] * TetrisConstants.BLOCK_SIZE;
+        this.blocks[index].y = coord[1] * TetrisConstants.BLOCK_SIZE;
+      }
+    });
+  } // updateShape
 } // TetrominoEntity
 
 export default TetrominoEntity;

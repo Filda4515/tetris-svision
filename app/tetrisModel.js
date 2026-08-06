@@ -60,7 +60,7 @@ export class TetrisModel extends AbstractModel {
     const pieceWidth = maxCol + 1;
 
     const spawnX = Math.floor((TetrisConstants.BOARD_COLS - pieceWidth) / 2);
-    const spawnY = 0;
+    const spawnY = -1;
 
     const tetEntity = new TetrominoEntity(this.boardEntity, spawnX, spawnY, data.shape, data.color);
 
@@ -74,6 +74,23 @@ export class TetrisModel extends AbstractModel {
     this.boardEntity.addEntity(tetEntity);
     this.activePiece = tetEntity;
   } // spawnNextPiece
+
+  rotateActivePiece() {
+    if (!this.activePiece) return;
+
+    const newShapeCoords = this.activePiece.getRotatedShape();
+
+    const testPiece = {
+      gridX: this.activePiece.gridX,
+      gridY: this.activePiece.gridY,
+      shapeCoords: newShapeCoords
+    };
+
+    if (this.canMove(testPiece, 0, 0)) {
+      this.activePiece.updateShape(newShapeCoords);
+      this.drawModel();
+    }
+  } // rotateActivePiece
 
   canMove(piece, dx, dy) {
     const newGridX = piece.gridX + dx;
@@ -137,7 +154,6 @@ export class TetrisModel extends AbstractModel {
               this.drawModel();
             }
             return true;
-
           case this.app.controls.keyboard.right:
           case 'D':
           case 'GamepadRight':
@@ -147,7 +163,6 @@ export class TetrisModel extends AbstractModel {
               this.drawModel();
             }
             return true;
-
           case this.app.controls.keyboard.down:
           case 'S':
           case 'GamepadDown':
@@ -157,6 +172,11 @@ export class TetrisModel extends AbstractModel {
               this.lastDropTime = this.app.now;
               this.drawModel();
             }
+            return true;
+          case this.app.controls.keyboard.rotate:
+          case 'W':
+          case 'GamepadOK':
+            this.rotateActivePiece();
             return true;
         }
         break;

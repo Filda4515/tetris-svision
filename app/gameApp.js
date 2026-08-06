@@ -49,7 +49,7 @@ export class GameApp extends AbstractApp {
     let result = {};
     switch(device) {
       case 'keyboard': 
-        result = {left: 'ArrowLeft', right: 'ArrowRight', down: 'ArrowDown'};
+        result = {left: 'ArrowLeft', right: 'ArrowRight', down: 'ArrowDown', rotate: 'ArrowUp'};
         break;
       case 'gamepads': 
         result = {supported: false, devices: {}};
