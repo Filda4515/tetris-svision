@@ -1,17 +1,19 @@
 /**/
 const { AbstractEntity } = await import('./svision/js/abstractEntity.js?ver=' + window.srcVersion);
 const { ZXColor } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxColor.js?ver=' + window.srcVersion);
+const { TetrisConstants } = await import('./tetrisConstants.js?ver=' + window.srcVersion);
 /*/
 import AbstractEntity from './svision/js/abstractEntity.js';
 import ZXColor from './svision/js/platform/canvas2D/zxSpectrum/zxColor.js';
+import TetrisConstants from './tetrisConstants.js';
 /**/
 // begin code
 
 export class TetrominoEntity extends AbstractEntity {
   constructor(parent, x, y, shapeCoords, color) {
     var isInteractive = false;
-    var blockSize = 8;
-    var subSize = 7;
+    var blockSize = TetrisConstants.BLOCK_SIZE;
+    var subSize = blockSize - TetrisConstants.GRID_LINE_WIDTH;
 
     var maxCol = 0;
     var maxRow = 0;
@@ -26,6 +28,9 @@ export class TetrominoEntity extends AbstractEntity {
     var height = (maxRow + 1) * blockSize;
 
     super(parent, posX, posY, width, height, isInteractive, ZXColor.brightBlack);
+
+    this.gridX = x;
+    this.gridY = y;
 
     this.shapeCoords = shapeCoords;
     this.color = color;
