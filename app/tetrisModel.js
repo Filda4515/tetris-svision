@@ -19,8 +19,9 @@ export class TetrisModel extends AbstractModel {
     this.id = 'TetrisModel';
     this.boardEntity = null;
 
-    this.activeTetrominoes = [];
+    this.activePiece = null;
     this.lastDropTime = 0;
+    this.nextPieceIndex = 0;
 
     this.boardGrid = Array(TetrisConstants.BOARD_ROWS)
       .fill(0)
@@ -39,15 +40,34 @@ export class TetrisModel extends AbstractModel {
     const boardY = Math.floor((this.desktopHeight - boardHeight) / 2);
 
     this.boardEntity = new TetrisBoardEntity(this.desktopEntity, boardX, boardY, boardWidth, boardHeight);
-
-    TETROMINOES_DATA.forEach((tetromino) => {
-      const tetEntity = new TetrominoEntity(this.boardEntity, tetromino.x, tetromino.y, tetromino.shape, tetromino.color);
-      this.boardEntity.addEntity(tetEntity);
-      this.activeTetrominoes.push(tetEntity);
-    });
-
     this.desktopEntity.addEntity(this.boardEntity);
+
+    this.spawnNextPiece();
   } // init
+
+  spawnNextPiece() {
+    // DEMO cycling through each once
+    if (this.nextPieceIndex < TETROMINOES_DATA.length) {
+      const data = TETROMINOES_DATA[this.nextPieceIndex];
+
+      let maxCol = 0;
+      data.shape.forEach((coord) => {
+        if (coord[0] > maxCol) maxCol = coord[0];
+      });
+      const pieceWidth = maxCol + 1;
+
+      const spawnX = Math.floor((TetrisConstants.BOARD_COLS - pieceWidth) / 2);
+      const spawnY = 0;
+
+      const tetEntity = new TetrominoEntity(this.boardEntity, spawnX, spawnY, data.shape, data.color);
+      this.boardEntity.addEntity(tetEntity);
+      this.activePiece = tetEntity;
+
+      this.nextPieceIndex++;
+    } else {
+      this.activePiece = null;
+    }
+  } // spawnNextPiece
 
   canMove(piece, dx, dy) {
     const newGridX = piece.gridX + dx;
@@ -90,15 +110,14 @@ export class TetrisModel extends AbstractModel {
     if (timestamp - this.lastDropTime > TetrisConstants.DROP_DELAY_MS) {
       this.lastDropTime = timestamp;
 
-      for (let i = this.activeTetrominoes.length - 1; i >= 0; i--) {
-        const piece = this.activeTetrominoes[i];
-
-        if (this.canMove(piece, 0, 1)) {
-          piece.gridY += 1;
-          piece.y = piece.gridY * TetrisConstants.BLOCK_SIZE;
+      if (this.activePiece) {
+        if (this.canMove(this.activePiece, 0, 1)) {
+          this.activePiece.gridY += 1;
+          this.activePiece.y = this.activePiece.gridY * TetrisConstants.BLOCK_SIZE;
         } else {
-          this.lockPiece(piece);
-          this.activeTetrominoes.splice(i, 1);
+          this.lockPiece(this.activePiece);
+          this.activePiece = null;
+          this.spawnNextPiece();
         }
       }
     }
