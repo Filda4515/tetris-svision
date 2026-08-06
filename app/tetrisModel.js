@@ -21,7 +21,7 @@ export class TetrisModel extends AbstractModel {
 
     this.activePiece = null;
     this.lastDropTime = 0;
-    this.nextPieceIndex = 0;
+    this.gameOver = false;
 
     this.boardGrid = Array(TetrisConstants.BOARD_ROWS)
       .fill(0)
@@ -48,27 +48,31 @@ export class TetrisModel extends AbstractModel {
   } // init
 
   spawnNextPiece() {
-    // DEMO cycling through each once
-    if (this.nextPieceIndex < TETROMINOES_DATA.length) {
-      const data = TETROMINOES_DATA[this.nextPieceIndex];
+    if (this.gameOver) return;
 
-      let maxCol = 0;
-      data.shape.forEach((coord) => {
-        if (coord[0] > maxCol) maxCol = coord[0];
-      });
-      const pieceWidth = maxCol + 1;
+    const randomIndex = Math.floor(Math.random() * TETROMINOES_DATA.length);
+    const data = TETROMINOES_DATA[randomIndex];
 
-      const spawnX = Math.floor((TetrisConstants.BOARD_COLS - pieceWidth) / 2);
-      const spawnY = 0;
+    let maxCol = 0;
+    data.shape.forEach((coord) => {
+      if (coord[0] > maxCol) maxCol = coord[0];
+    });
+    const pieceWidth = maxCol + 1;
 
-      const tetEntity = new TetrominoEntity(this.boardEntity, spawnX, spawnY, data.shape, data.color);
-      this.boardEntity.addEntity(tetEntity);
-      this.activePiece = tetEntity;
+    const spawnX = Math.floor((TetrisConstants.BOARD_COLS - pieceWidth) / 2);
+    const spawnY = 0;
 
-      this.nextPieceIndex++;
-    } else {
+    const tetEntity = new TetrominoEntity(this.boardEntity, spawnX, spawnY, data.shape, data.color);
+
+    if (!this.canMove(tetEntity, 0, 0)) {
+      this.gameOver = true;
       this.activePiece = null;
+      console.log("GAME OVER");
+      return;
     }
+
+    this.boardEntity.addEntity(tetEntity);
+    this.activePiece = tetEntity;
   } // spawnNextPiece
 
   canMove(piece, dx, dy) {
@@ -106,6 +110,8 @@ export class TetrisModel extends AbstractModel {
     if (super.handleEvent(event)) {
       return true;
     }
+
+    if (this.gameOver) return false;
 
     switch (event.id) {
       case 'keyPress':
@@ -206,6 +212,8 @@ export class TetrisModel extends AbstractModel {
 
   loopModel(timestamp) {
     super.loopModel(timestamp);
+
+    if (this.gameOver) return;
 
     if (!this.lastDropTime) {
       this.lastDropTime = timestamp;
