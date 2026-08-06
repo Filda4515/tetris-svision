@@ -17,9 +17,46 @@ export class GameApp extends AbstractApp {
     this.devModeName = devModeName;
     this.appIconSprite = appIconSprite;
 
+    this.controlsOptions = {
+      keyboard: {
+        device: 'keyboard',
+        keys: [
+          {action: 'left', label: 'MOVE LEFT'},
+          {action: 'right', label: 'MOVE RIGHT'},
+          {action: 'down', label: 'SOFT DROP'}
+        ]
+      },
+      gamepads: {
+        device: 'gamepads',
+        keys: [
+          {action: 'left', label: 'MOVE LEFT', eventKey: 'GamepadLeft'},
+          {action: 'right', label: 'MOVE RIGHT', eventKey: 'GamepadRight'},
+          {action: 'down', label: 'SOFT DROP', eventKey: 'GamepadDown'}
+        ]
+      }
+    };
+
+    this.controls = {
+      keyboard: this.getControls('keyboard'),
+      gamepads: this.getControls('gamepads')
+    };
+
     this.id = 'GameApp';
     this.setModel('TetrisModel');
   } // constructor
+
+  getControls(device) {
+    let result = {};
+    switch(device) {
+      case 'keyboard': 
+        result = {left: 'ArrowLeft', right: 'ArrowRight', down: 'ArrowDown'};
+        break;
+      case 'gamepads': 
+        result = {supported: false, devices: {}};
+        break;
+    }
+    return result;
+  } // getControls
 
   setModel(model) {
     if (this.model) {

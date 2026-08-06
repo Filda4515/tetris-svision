@@ -26,6 +26,8 @@ export class TetrisModel extends AbstractModel {
     this.boardGrid = Array(TetrisConstants.BOARD_ROWS)
       .fill(0)
       .map(() => Array(TetrisConstants.BOARD_COLS).fill(0));
+
+    this.activeTouches = {};
   } // constructor
 
   init() {
@@ -99,6 +101,108 @@ export class TetrisModel extends AbstractModel {
       }
     });
   } // lockPiece
+
+  handleEvent(event) {
+    if (super.handleEvent(event)) {
+      return true;
+    }
+
+    switch (event.id) {
+      case 'keyPress':
+        if (!this.activePiece) return false;
+
+        if (event.key === 'Touch') {
+          this.activeTouches[event.identifier] = { x: event.x, y: event.y };
+          return true;
+        }
+
+        let key = event.key;
+        if (key.length === 1) {
+          key = key.toUpperCase();
+        }
+
+        switch (key) {
+          case this.app.controls.keyboard.left:
+          case 'A':
+          case 'GamepadLeft':
+            if (this.canMove(this.activePiece, -1, 0)) {
+              this.activePiece.gridX -= 1;
+              this.activePiece.x = this.activePiece.gridX * TetrisConstants.BLOCK_SIZE;
+              this.drawModel();
+            }
+            return true;
+
+          case this.app.controls.keyboard.right:
+          case 'D':
+          case 'GamepadRight':
+            if (this.canMove(this.activePiece, 1, 0)) {
+              this.activePiece.gridX += 1;
+              this.activePiece.x = this.activePiece.gridX * TetrisConstants.BLOCK_SIZE;
+              this.drawModel();
+            }
+            return true;
+
+          case this.app.controls.keyboard.down:
+          case 'S':
+          case 'GamepadDown':
+            if (this.canMove(this.activePiece, 0, 1)) {
+              this.activePiece.gridY += 1;
+              this.activePiece.y = this.activePiece.gridY * TetrisConstants.BLOCK_SIZE;
+              this.lastDropTime = this.app.now;
+              this.drawModel();
+            }
+            return true;
+        }
+        break;
+
+      case 'keyMove':
+        if (event.key === 'Touch' && this.activeTouches[event.identifier] && this.activePiece) {
+          const touchCenter = this.activeTouches[event.identifier];
+          const deltaX = event.x - touchCenter.x;
+          const deltaY = event.y - touchCenter.y;
+
+          const swipeThreshold = 15;
+
+          if (deltaX < -swipeThreshold) {
+            if (this.canMove(this.activePiece, -1, 0)) {
+              this.activePiece.gridX -= 1;
+              this.activePiece.x = this.activePiece.gridX * TetrisConstants.BLOCK_SIZE;
+              this.drawModel();
+            }
+            touchCenter.x = event.x;
+            touchCenter.y = event.y;
+          } else if (deltaX > swipeThreshold) {
+            if (this.canMove(this.activePiece, 1, 0)) {
+              this.activePiece.gridX += 1;
+              this.activePiece.x = this.activePiece.gridX * TetrisConstants.BLOCK_SIZE;
+              this.drawModel();
+            }
+            touchCenter.x = event.x;
+            touchCenter.y = event.y;
+          } else if (deltaY > swipeThreshold) {
+            if (this.canMove(this.activePiece, 0, 1)) {
+              this.activePiece.gridY += 1;
+              this.activePiece.y = this.activePiece.gridY * TetrisConstants.BLOCK_SIZE;
+              this.lastDropTime = this.app.now;
+              this.drawModel();
+            }
+            touchCenter.x = event.x;
+            touchCenter.y = event.y;
+          }
+          return true;
+        }
+        break;
+
+      case 'keyRelease':
+        if (event.key === 'Touch') {
+          delete this.activeTouches[event.identifier];
+          return true;
+        }
+        break;
+    }
+
+    return false;
+  } // handleEvent
 
   loopModel(timestamp) {
     super.loopModel(timestamp);

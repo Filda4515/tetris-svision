@@ -27,7 +27,7 @@ export class TetrominoEntity extends AbstractEntity {
     const width = (maxCol + 1) * blockSize;
     const height = (maxRow + 1) * blockSize;
 
-    super(parent, posX, posY, width, height, isInteractive, ZXColor.brightBlack);
+    super(parent, posX, posY, width, height, isInteractive, false);
 
     this.gridX = x;
     this.gridY = y;
