@@ -4,12 +4,14 @@ const { TetrisBoardEntity } = await import('./tetrisBoardEntity.js?ver=' + windo
 const { TetrominoEntity } = await import('./tetrominoEntity.js?ver=' + window.srcVersion);
 const { ZXColor } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxColor.js?ver=' + window.srcVersion);
 const { TetrisConstants, TETROMINOES_DATA } = await import('./tetrisConstants.js?ver=' + window.srcVersion);
+const { TextEntity } = await import('./svision/js/platform/canvas2D/textEntity.js?ver=' + window.srcVersion);
 /*/
 import AbstractModel from './svision/js/abstractModel.js';
 import TetrisBoardEntity from './tetrisBoardEntity.js';
 import OTetrominoEntity from './oTetrominoEntity.js';
 import ZXColor from './svision/js/platform/canvas2D/zxSpectrum/zxColor.js';
 import TetrisConstants from './tetrisConstants.js';
+import TextEntity from './svision/js/platform/canvas2D/textEntity.js';
 /**/
 // begin code
 
@@ -30,6 +32,11 @@ export class TetrisModel extends AbstractModel {
     this.activeTouches = {};
 
     this.lastPieceIndex = null;
+
+    this.lines = 0;
+    this.level = 0;
+    this.linesEntity = null;
+    this.levelEntity = null;
   } // constructor
 
   init() {
@@ -46,6 +53,71 @@ export class TetrisModel extends AbstractModel {
     this.boardEntity = new TetrisBoardEntity(this.desktopEntity, boardX, boardY, boardWidth, boardHeight);
     this.boardEntity.boardGrid = this.boardGrid;
     this.desktopEntity.addEntity(this.boardEntity);
+
+    const panelX = boardX + TetrisConstants.UI_PANEL_OFFSET_X;
+    const panelY = boardY;
+    const label_width = TetrisConstants.UI_LABEL_WIDTH;
+    const label_height = TetrisConstants.UI_LABEL_HEIGHT;
+    const spaceL = TetrisConstants.UI_LINE_SPACING;
+    const spaceB = TetrisConstants.UI_BLOCK_SPACING;
+
+    this.desktopEntity.addEntity(
+      new TextEntity(
+        this.desktopEntity,
+        this.app.fonts.zxFonts8x8,
+        panelX,
+        panelY,
+        label_width,
+        label_height,
+        'LEVEL',
+        ZXColor.yellow,
+        false,
+        { align: 'center' },
+      ),
+    );
+
+    this.levelEntity = new TextEntity(
+      this.desktopEntity,
+      this.app.fonts.zxFonts8x8,
+      panelX,
+      panelY + spaceL,
+      label_width,
+      label_height,
+      this.level.toString(),
+      ZXColor.brightWhite,
+      false,
+      { align: 'center' },
+    );
+    this.desktopEntity.addEntity(this.levelEntity);
+
+    this.desktopEntity.addEntity(
+      new TextEntity(
+        this.desktopEntity,
+        this.app.fonts.zxFonts8x8,
+        panelX,
+        panelY + spaceB,
+        label_width,
+        label_height,
+        'LINES',
+        ZXColor.yellow,
+        false,
+        { align: 'center' },
+      ),
+    );
+
+    this.linesEntity = new TextEntity(
+      this.desktopEntity,
+      this.app.fonts.zxFonts8x8,
+      panelX,
+      panelY + spaceB + spaceL,
+      label_width,
+      label_height,
+      this.lines.toString(),
+      ZXColor.brightWhite,
+      false,
+      { align: 'center' },
+    );
+    this.desktopEntity.addEntity(this.linesEntity);
 
     this.spawnNextPiece();
   } // init
@@ -137,6 +209,26 @@ export class TetrisModel extends AbstractModel {
     }
   } // lockPiece
 
+  updateLinesAndLevel(linesCleared) {
+    if (linesCleared === 0) return;
+
+    this.lines += linesCleared;
+
+    if (this.lines >= 200) {
+      const overflow = this.lines - 200;
+      this.lines = 110 + overflow;
+    }
+
+    this.level = Math.floor(this.lines / 20);
+
+    if (this.level > 9) {
+      this.level = 9;
+    }
+
+    this.linesEntity.setText(this.lines.toString());
+    this.levelEntity.setText(this.level.toString());
+  } // updateLinesAndLevel
+
   clearLines() {
     let linesCleared = 0;
     for (let y = TetrisConstants.BOARD_ROWS - 1; y >= 0; y--) {
@@ -161,7 +253,8 @@ export class TetrisModel extends AbstractModel {
     }
 
     if (linesCleared > 0) {
-      console.log(`Vyčištěno řádků: ${linesCleared}`);
+      this.updateLinesAndLevel(linesCleared);
+
       if (this.boardEntity.drawingCache?.[0]?.cleanCache) {
         this.boardEntity.drawingCache[0].cleanCache();
       }
@@ -285,7 +378,9 @@ export class TetrisModel extends AbstractModel {
       this.lastDropTime = timestamp;
     }
 
-    if (timestamp - this.lastDropTime > TetrisConstants.DROP_DELAY_MS) {
+    const currentDelay = TetrisConstants.DROP_DELAYS_MS[this.level] || 100;
+
+    if (timestamp - this.lastDropTime > currentDelay) {
       this.lastDropTime = timestamp;
 
       if (this.activePiece) {
