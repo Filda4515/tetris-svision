@@ -42,6 +42,7 @@ export class TetrisModel extends AbstractModel {
     const boardY = Math.floor((this.desktopHeight - boardHeight) / 2);
 
     this.boardEntity = new TetrisBoardEntity(this.desktopEntity, boardX, boardY, boardWidth, boardHeight);
+    this.boardEntity.boardGrid = this.boardGrid;
     this.desktopEntity.addEntity(this.boardEntity);
 
     this.spawnNextPiece();
@@ -118,10 +119,47 @@ export class TetrisModel extends AbstractModel {
       const boardY = piece.gridY + coord[1];
 
       if (boardY >= 0 && boardY < TetrisConstants.BOARD_ROWS) {
-        this.boardGrid[boardY][boardX] = 1;
+        this.boardGrid[boardY][boardX] = piece.color;
       }
     });
+    piece.destroy();
+
+    if (this.boardEntity.drawingCache?.[0]?.cleanCache) {
+      this.boardEntity.drawingCache[0].cleanCache();
+    }
   } // lockPiece
+
+  clearLines() {
+    let linesCleared = 0;
+    for (let y = TetrisConstants.BOARD_ROWS - 1; y >= 0; y--) {
+      let isRowFull = true;
+      
+      for (let x = 0; x < TetrisConstants.BOARD_COLS; x++) {
+        if (this.boardGrid[y][x] === 0) {
+          isRowFull = false;
+          break;
+        }
+      }
+      
+      if (isRowFull) {
+        this.boardGrid.splice(y, 1);
+
+        const emptyRow = Array(TetrisConstants.BOARD_COLS).fill(0);
+        this.boardGrid.unshift(emptyRow);
+        
+        linesCleared++;
+        y++; 
+      }
+    }
+    
+    if (linesCleared > 0) {
+      console.log(`Vyčištěno řádků: ${linesCleared}`);
+      if (this.boardEntity.drawingCache?.[0]?.cleanCache) {
+        this.boardEntity.drawingCache[0].cleanCache();
+      }
+      this.drawModel();
+    }
+  } // clearLines
 
   handleEvent(event) {
     if (super.handleEvent(event)) {
@@ -249,6 +287,7 @@ export class TetrisModel extends AbstractModel {
         } else {
           this.lockPiece(this.activePiece);
           this.activePiece = null;
+          this.clearLines();
           this.spawnNextPiece();
         }
       }
