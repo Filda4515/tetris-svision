@@ -28,6 +28,8 @@ export class TetrisModel extends AbstractModel {
       .map(() => Array(TetrisConstants.BOARD_COLS).fill(0));
 
     this.activeTouches = {};
+
+    this.lastPieceIndex = null;
   } // constructor
 
   init() {
@@ -51,8 +53,14 @@ export class TetrisModel extends AbstractModel {
   spawnNextPiece() {
     if (this.gameOver) return;
 
-    const randomIndex = Math.floor(Math.random() * TETROMINOES_DATA.length);
-    const data = TETROMINOES_DATA[randomIndex];
+    let nextIndex = Math.floor(Math.random() * TETROMINOES_DATA.length);
+    if (nextIndex === this.lastPieceIndex) {
+      nextIndex = Math.floor(Math.random() * TETROMINOES_DATA.length);
+    }
+
+    this.lastPieceIndex = nextIndex;
+
+    const data = TETROMINOES_DATA[nextIndex];
 
     let maxCol = 0;
     data.shape.forEach((coord) => {
@@ -68,7 +76,7 @@ export class TetrisModel extends AbstractModel {
     if (!this.canMove(tetEntity, 0, 0)) {
       this.gameOver = true;
       this.activePiece = null;
-      console.log("GAME OVER");
+      console.log('GAME OVER');
       return;
     }
 
@@ -84,7 +92,7 @@ export class TetrisModel extends AbstractModel {
     const testPiece = {
       gridX: this.activePiece.gridX,
       gridY: this.activePiece.gridY,
-      shapeCoords: newShapeCoords
+      shapeCoords: newShapeCoords,
     };
 
     if (this.canMove(testPiece, 0, 0)) {
@@ -133,25 +141,25 @@ export class TetrisModel extends AbstractModel {
     let linesCleared = 0;
     for (let y = TetrisConstants.BOARD_ROWS - 1; y >= 0; y--) {
       let isRowFull = true;
-      
+
       for (let x = 0; x < TetrisConstants.BOARD_COLS; x++) {
         if (this.boardGrid[y][x] === 0) {
           isRowFull = false;
           break;
         }
       }
-      
+
       if (isRowFull) {
         this.boardGrid.splice(y, 1);
 
         const emptyRow = Array(TetrisConstants.BOARD_COLS).fill(0);
         this.boardGrid.unshift(emptyRow);
-        
+
         linesCleared++;
-        y++; 
+        y++;
       }
     }
-    
+
     if (linesCleared > 0) {
       console.log(`Vyčištěno řádků: ${linesCleared}`);
       if (this.boardEntity.drawingCache?.[0]?.cleanCache) {
