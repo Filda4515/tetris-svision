@@ -10,70 +10,61 @@ import TetrisConstants from './tetrisConstants.js';
 // begin code
 
 export class TetrominoEntity extends AbstractEntity {
-  constructor(parent, x, y, shapeCoords, color) {
+  constructor(parent, x, y, states, color) {
     const isInteractive = false;
     const blockSize = TetrisConstants.BLOCK_SIZE;
     const subSize = blockSize - TetrisConstants.GRID_LINE_WIDTH;
 
-    let maxCol = 0;
-    let maxRow = 0;
-    shapeCoords.forEach((coord) => {
-      if (coord[0] > maxCol) maxCol = coord[0];
-      if (coord[1] > maxRow) maxRow = coord[1];
-    });
+    const initialMatrix = states[0];
+    const matrixRows = initialMatrix.length;
+    const matrixCols = initialMatrix[0].length;
 
     const posX = x * blockSize;
     const posY = y * blockSize;
-    const width = (maxCol + 1) * blockSize;
-    const height = (maxRow + 1) * blockSize;
+    const width = matrixCols * blockSize;
+    const height = matrixRows * blockSize;
 
     super(parent, posX, posY, width, height, isInteractive, false);
 
     this.gridX = x;
     this.gridY = y;
-    this.shapeCoords = shapeCoords;
+    this.states = states;
+    this.currentStateIndex = 0;
+    this.currentMatrix = initialMatrix;
     this.color = color;
     this.blocks = [];
 
-    shapeCoords.forEach((coord) => {
-      const blockX = coord[0] * blockSize;
-      const blockY = coord[1] * blockSize;
-      const block = new AbstractEntity(this, blockX, blockY, subSize, subSize, isInteractive, color);
+    for (let i = 0; i < 4; i++) {
+      const block = new AbstractEntity(this, 0, 0, subSize, subSize, isInteractive, color);
       this.blocks.push(block);
       this.addEntity(block);
-    });
+    }
+
+    this.updateBlocksPositions(this.currentMatrix);
   } // constructor
 
-  getRotatedShape() {
-    // [x, y] -> [-y, x]
-    const rotated = this.shapeCoords.map((coord) => [-coord[1], coord[0]]);
+  getNextStateMatrix() {
+    const nextIndex = (this.currentStateIndex + 1) % this.states.length;
+    return this.states[nextIndex];
+  } // getNextStateMatrix
 
-    let minX = Math.min(...rotated.map((c) => c[0]));
-    let minY = Math.min(...rotated.map((c) => c[1]));
-    
-    return rotated.map((c) => [c[0] - minX, c[1] - minY]);
-  } // getRotatedShape
+  updateBlocksPositions(newMatrix, newIndex) {
+    this.currentMatrix = newMatrix;
+    if (newIndex !== undefined) {
+      this.currentStateIndex = newIndex;
+    }
 
-  updateShape(newShapeCoords) {
-    this.shapeCoords = newShapeCoords;
-
-    let maxCol = 0;
-    let maxRow = 0;
-    newShapeCoords.forEach((coord) => {
-      if (coord[0] > maxCol) maxCol = coord[0];
-      if (coord[1] > maxRow) maxRow = coord[1];
-    });
-
-    this.width = (maxCol + 1) * TetrisConstants.BLOCK_SIZE;
-    this.height = (maxRow + 1) * TetrisConstants.BLOCK_SIZE;
-
-    newShapeCoords.forEach((coord, index) => {
-      if (this.blocks[index]) {
-        this.blocks[index].x = coord[0] * TetrisConstants.BLOCK_SIZE;
-        this.blocks[index].y = coord[1] * TetrisConstants.BLOCK_SIZE;
+    let blockIdx = 0;
+    for (let row = 0; row < newMatrix.length; row++) {
+      for (let col = 0; col < newMatrix[row].length; col++) {
+        if (newMatrix[row][col] === 1 && blockIdx < 4) {
+          this.blocks[blockIdx].x = col * TetrisConstants.BLOCK_SIZE;
+          this.blocks[blockIdx].y = row * TetrisConstants.BLOCK_SIZE;
+          blockIdx++;
+        }
       }
-    });
-  } // updateShape
+    }
+  } // updateBlocksPositions
 } // TetrominoEntity
 
 export default TetrominoEntity;

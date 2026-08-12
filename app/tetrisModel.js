@@ -133,19 +133,21 @@ export class TetrisModel extends AbstractModel {
     this.lastPieceIndex = nextIndex;
 
     const data = TETROMINOES_DATA[nextIndex];
+    const initialMatrix = data.states[0];
+    const matrixCols = initialMatrix[0].length;
 
-    let maxCol = 0;
-    data.shape.forEach((coord) => {
-      if (coord[0] > maxCol) maxCol = coord[0];
-    });
-    const pieceWidth = maxCol + 1;
+    const spawnX = Math.floor((TetrisConstants.BOARD_COLS - matrixCols) / 2);
+    const spawnY = 0;
 
-    const spawnX = Math.floor((TetrisConstants.BOARD_COLS - pieceWidth) / 2);
-    const spawnY = -1;
+    const tetEntity = new TetrominoEntity(this.boardEntity, spawnX, spawnY, data.states, data.color);
 
-    const tetEntity = new TetrominoEntity(this.boardEntity, spawnX, spawnY, data.shape, data.color);
+    const testPiece = {
+      gridX: spawnX,
+      gridY: spawnY,
+      currentMatrix: initialMatrix,
+    };
 
-    if (!this.canMove(tetEntity, 0, 0)) {
+    if (!this.canMove(testPiece, 0, 0)) {
       this.gameOver = true;
       this.activePiece = null;
       console.log('GAME OVER');
@@ -159,16 +161,17 @@ export class TetrisModel extends AbstractModel {
   rotateActivePiece() {
     if (!this.activePiece) return;
 
-    const newShapeCoords = this.activePiece.getRotatedShape();
+    const newMatrix = this.activePiece.getNextStateMatrix();
+    const nextIndex = (this.activePiece.currentStateIndex + 1) % this.activePiece.states.length;
 
     const testPiece = {
       gridX: this.activePiece.gridX,
       gridY: this.activePiece.gridY,
-      shapeCoords: newShapeCoords,
+      currentMatrix: newMatrix,
     };
 
     if (this.canMove(testPiece, 0, 0)) {
-      this.activePiece.updateShape(newShapeCoords);
+      this.activePiece.updateBlocksPositions(newMatrix, nextIndex);
       this.drawModel();
     }
   } // rotateActivePiece
@@ -176,32 +179,42 @@ export class TetrisModel extends AbstractModel {
   canMove(piece, dx, dy) {
     const newGridX = piece.gridX + dx;
     const newGridY = piece.gridY + dy;
+    const matrix = piece.currentMatrix;
 
-    for (let i = 0; i < piece.shapeCoords.length; i++) {
-      const coord = piece.shapeCoords[i];
-      const boardX = newGridX + coord[0];
-      const boardY = newGridY + coord[1];
+    for (let row = 0; row < matrix.length; row++) {
+      for (let col = 0; col < matrix[row].length; col++) {
+        if (matrix[row][col] === 1) {
+          const boardX = newGridX + col;
+          const boardY = newGridY + row;
 
-      if (boardX < 0 || boardX >= TetrisConstants.BOARD_COLS || boardY >= TetrisConstants.BOARD_ROWS) {
-        return false;
-      }
+          if (boardX < 0 || boardX >= TetrisConstants.BOARD_COLS || boardY >= TetrisConstants.BOARD_ROWS) {
+            return false;
+          }
 
-      if (boardY >= 0 && this.boardGrid[boardY][boardX] !== 0) {
-        return false;
+          if (boardY >= 0 && this.boardGrid[boardY][boardX] !== 0) {
+            return false;
+          }
+        }
       }
     }
     return true;
   } // canMove
 
   lockPiece(piece) {
-    piece.shapeCoords.forEach((coord) => {
-      const boardX = piece.gridX + coord[0];
-      const boardY = piece.gridY + coord[1];
+    const matrix = piece.currentMatrix;
 
-      if (boardY >= 0 && boardY < TetrisConstants.BOARD_ROWS) {
-        this.boardGrid[boardY][boardX] = piece.color;
+    for (let row = 0; row < matrix.length; row++) {
+      for (let col = 0; col < matrix[row].length; col++) {
+        if (matrix[row][col] === 1) {
+          const boardX = piece.gridX + col;
+          const boardY = piece.gridY + row;
+
+          if (boardY >= 0 && boardY < TetrisConstants.BOARD_ROWS) {
+            this.boardGrid[boardY][boardX] = piece.color;
+          }
+        }
       }
-    });
+    }
     piece.destroy();
 
     if (this.boardEntity.drawingCache?.[0]?.cleanCache) {

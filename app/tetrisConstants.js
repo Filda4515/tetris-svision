@@ -16,17 +16,148 @@ export const TetrisConstants = {
   UI_LABEL_WIDTH: 56,
   UI_LABEL_HEIGHT: 8,
   UI_LINE_SPACING: 10,
-  UI_BLOCK_SPACING: 24
+  UI_BLOCK_SPACING: 24,
 };
 
 export const TETROMINOES_DATA = [
-  { shape: [[0, 0], [1, 0], [2, 0], [3, 0]], color: ZXColor.brightYellow, x: 1, y: 1 }, // I
-  { shape: [[0, 0], [1, 0], [0, 1], [1, 1]], color: ZXColor.brightRed, x: 6, y: 1 }, // O
-  { shape: [[1, 0], [0, 1], [1, 1], [2, 1]], color: ZXColor.brightCyan, x: 1, y: 4 }, // T
-  { shape: [[1, 0], [2, 0], [0, 1], [1, 1]], color: ZXColor.brightMagenta, x: 6, y: 4 },// S
-  { shape: [[0, 0], [1, 0], [1, 1], [2, 1]], color: ZXColor.brightGreen, x: 1, y: 8 }, // Z
-  { shape: [[0, 0], [0, 1], [1, 1], [2, 1]], color: ZXColor.brightBlue, x: 6, y: 8 }, // J
-  { shape: [[2, 0], [0, 1], [1, 1], [2, 1]], color: ZXColor.brightWhite, x: 1, y: 12 }, // L
+  {
+    // I-tetromino
+    states: [
+      [
+        [0, 0, 0, 0],
+        [1, 1, 1, 1],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+      ],
+      [
+        [0, 1, 0, 0],
+        [0, 1, 0, 0],
+        [0, 1, 0, 0],
+        [0, 1, 0, 0],
+      ],
+    ],
+    color: ZXColor.brightYellow,
+  },
+  {
+    // O-tetromino
+    states: [
+      [
+        [1, 1],
+        [1, 1],
+      ],
+    ],
+    color: ZXColor.brightRed,
+  },
+  {
+    // T-tetromino
+    states: [
+      [
+        [0, 1, 0],
+        [1, 1, 1],
+        [0, 0, 0],
+      ],
+      [
+        [0, 1, 0],
+        [0, 1, 1],
+        [0, 1, 0],
+      ],
+      [
+        [0, 0, 0],
+        [1, 1, 1],
+        [0, 1, 0],
+      ],
+      [
+        [0, 1, 0],
+        [1, 1, 0],
+        [0, 1, 0],
+      ],
+    ],
+    color: ZXColor.brightCyan,
+  },
+  {
+    // S-tetromino
+    states: [
+      [
+        [0, 1, 1],
+        [1, 1, 0],
+        [0, 0, 0],
+      ],
+      [
+        [0, 1, 0],
+        [0, 1, 1],
+        [0, 0, 1],
+      ],
+    ],
+    color: ZXColor.brightMagenta,
+  },
+  {
+    // Z-tetromino
+    states: [
+      [
+        [1, 1, 0],
+        [0, 1, 1],
+        [0, 0, 0],
+      ],
+      [
+        [0, 0, 1],
+        [0, 1, 1],
+        [0, 1, 0],
+      ],
+    ],
+    color: ZXColor.brightGreen,
+  },
+  {
+    // J-tetromino
+    states: [
+      [
+        [1, 0, 0],
+        [1, 1, 1],
+        [0, 0, 0],
+      ],
+      [
+        [0, 1, 1],
+        [0, 1, 0],
+        [0, 1, 0],
+      ],
+      [
+        [0, 0, 0],
+        [1, 1, 1],
+        [0, 0, 1],
+      ],
+      [
+        [0, 1, 0],
+        [0, 1, 0],
+        [1, 1, 0],
+      ],
+    ],
+    color: ZXColor.brightBlue,
+  },
+  {
+    // L-tetromino
+    states: [
+      [
+        [0, 0, 1],
+        [1, 1, 1],
+        [0, 0, 0],
+      ],
+      [
+        [0, 1, 0],
+        [0, 1, 0],
+        [0, 1, 1],
+      ],
+      [
+        [0, 0, 0],
+        [1, 1, 1],
+        [1, 0, 0],
+      ],
+      [
+        [1, 1, 0],
+        [0, 1, 0],
+        [0, 1, 0],
+      ],
+    ],
+    color: ZXColor.brightWhite,
+  },
 ];
 
 export default TetrisConstants;
