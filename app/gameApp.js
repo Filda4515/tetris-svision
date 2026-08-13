@@ -29,7 +29,8 @@ export class GameApp extends AbstractApp {
         keys: [
           { action: 'left', label: 'MOVE LEFT' },
           { action: 'right', label: 'MOVE RIGHT' },
-          { action: 'down', label: 'SOFT DROP' },
+          { action: 'rotate', label: 'ROTATE' },
+          { action: 'hardDrop', label: 'HARD DROP' },
         ],
       },
       gamepads: {
@@ -37,14 +38,47 @@ export class GameApp extends AbstractApp {
         keys: [
           { action: 'left', label: 'MOVE LEFT', eventKey: 'GamepadLeft' },
           { action: 'right', label: 'MOVE RIGHT', eventKey: 'GamepadRight' },
-          { action: 'down', label: 'SOFT DROP', eventKey: 'GamepadDown' },
+          { action: 'rotate', label: 'ROTATE', eventKey: 'GamepadOK' },
+          { action: 'hardDrop', label: 'HARD DROP', eventKey: 'GamepadDown' },
         ],
+      },
+      touchscreen: {
+        device: 'touchscreen',
+        types: {
+          keys: ['tetrisLayout'],
+          tetrisLayout: {
+            left: {
+              type: 'button',
+              control: false,
+              action: 'hardDrop',
+              actions: false,
+              sprite: 'drop',
+            },
+            right: {
+              type: 'joystick',
+              control: 'both',
+              action: false,
+              actions: ['rotate', 'right', false, 'left'],
+              sprite: 'left-right',
+            },
+          },
+          default: {},
+        },
+        icons: {
+          drop: {
+            compressedSpriteData: 'lP101300N0A970111030Z0510122382012345617171859',
+          },
+          'left-right': {
+            compressedSpriteData: 'lP101300N08B701050P020N06910121213421245641465421243121217',
+          },
+        },
       },
     };
 
     this.controls = {
       keyboard: this.getControls('keyboard'),
       gamepads: this.getControls('gamepads'),
+      touchscreen: this.getControls('touchscreen'),
     };
 
     this.id = 'GameApp';
@@ -55,10 +89,13 @@ export class GameApp extends AbstractApp {
     let result = {};
     switch (device) {
       case 'keyboard':
-        result = { left: 'ArrowLeft', right: 'ArrowRight', down: 'ArrowDown', rotate: 'ArrowUp' };
+        result = { left: 'ArrowLeft', right: 'ArrowRight', hardDrop: ' ', rotate: 'ArrowUp' };
         break;
       case 'gamepads':
         result = { supported: false, devices: {} };
+        break;
+      case 'touchscreen':
+        result = { supported: false, type: 'tetrisLayout' };
         break;
     }
     return result;
