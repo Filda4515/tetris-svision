@@ -3,17 +3,17 @@ const { AbstractModel } = await import('./svision/js/abstractModel.js?ver=' + wi
 const { TetrisBoardEntity } = await import('./tetrisBoardEntity.js?ver=' + window.srcVersion);
 const { TetrominoEntity } = await import('./tetrominoEntity.js?ver=' + window.srcVersion);
 const { TetrisInputController } = await import('./tetrisInputController.js?ver=' + window.srcVersion);
+const { TetrisInfoEntity } = await import('./tetrisInfoEntity.js?ver=' + window.srcVersion);
 const { ZXColor } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxColor.js?ver=' + window.srcVersion);
 const { TetrisConstants, TETROMINOES_DATA } = await import('./tetrisConstants.js?ver=' + window.srcVersion);
-const { TextEntity } = await import('./svision/js/platform/canvas2D/textEntity.js?ver=' + window.srcVersion);
 /*/
 import AbstractModel from './svision/js/abstractModel.js';
 import TetrisBoardEntity from './tetrisBoardEntity.js';
 import TetrominoEntity from './tetrominoEntity.js';
 import TetrisInputController from './tetrisInputController.js';
+import TetrisInfoEntity from './tetrisInfoEntity.js';
 import ZXColor from './svision/js/platform/canvas2D/zxSpectrum/zxColor.js';
 import TetrisConstants from './tetrisConstants.js';
-import TextEntity from './svision/js/platform/canvas2D/textEntity.js';
 /**/
 // begin code
 
@@ -22,21 +22,24 @@ export class TetrisModel extends AbstractModel {
     super(app);
     this.id = 'TetrisModel';
     this.boardEntity = null;
+    this.infoEntity = null;
 
     this.activePiece = null;
     this.lastDropTime = 0;
     this.gameOver = false;
+
     this.isFastDropping = false;
+    this.dropStartY = 0;
 
     this.boardGrid = Array(TetrisConstants.BOARD_ROWS)
       .fill(0)
       .map(() => Array(TetrisConstants.BOARD_COLS).fill(0));
 
     this.lastPieceIndex = null;
+
+    this.score = 0;
     this.lines = 0;
     this.level = 0;
-    this.linesEntity = null;
-    this.levelEntity = null;
 
     this.inputController = new TetrisInputController(this);
   } // constructor
@@ -57,72 +60,16 @@ export class TetrisModel extends AbstractModel {
     this.desktopEntity.addEntity(this.boardEntity);
 
     const panelX = boardX + TetrisConstants.UI_PANEL_OFFSET_X;
-    const panelY = boardY;
-    const label_width = TetrisConstants.UI_LABEL_WIDTH;
-    const label_height = TetrisConstants.UI_LABEL_HEIGHT;
-    const spaceL = TetrisConstants.UI_LINE_SPACING;
-    const spaceB = TetrisConstants.UI_BLOCK_SPACING;
-
-    this.desktopEntity.addEntity(
-      new TextEntity(
-        this.desktopEntity,
-        this.app.fonts.zxFonts8x8,
-        panelX,
-        panelY,
-        label_width,
-        label_height,
-        'LEVEL',
-        ZXColor.yellow,
-        false,
-        { align: 'center' },
-      ),
-    );
-
-    this.levelEntity = new TextEntity(
-      this.desktopEntity,
-      this.app.fonts.zxFonts8x8,
-      panelX,
-      panelY + spaceL,
-      label_width,
-      label_height,
-      this.level.toString(),
-      ZXColor.brightWhite,
-      false,
-      { align: 'center' },
-    );
-    this.desktopEntity.addEntity(this.levelEntity);
-
-    this.desktopEntity.addEntity(
-      new TextEntity(
-        this.desktopEntity,
-        this.app.fonts.zxFonts8x8,
-        panelX,
-        panelY + spaceB,
-        label_width,
-        label_height,
-        'LINES',
-        ZXColor.yellow,
-        false,
-        { align: 'center' },
-      ),
-    );
-
-    this.linesEntity = new TextEntity(
-      this.desktopEntity,
-      this.app.fonts.zxFonts8x8,
-      panelX,
-      panelY + spaceB + spaceL,
-      label_width,
-      label_height,
-      this.lines.toString(),
-      ZXColor.brightWhite,
-      false,
-      { align: 'center' },
-    );
-    this.desktopEntity.addEntity(this.linesEntity);
+    this.infoEntity = new TetrisInfoEntity(this.desktopEntity, panelX, boardY, 64, boardHeight);
+    this.desktopEntity.addEntity(this.infoEntity);
 
     this.spawnNextPiece();
   } // init
+
+  addScore(points) {
+    this.score += points;
+    this.infoEntity.updateScore(this.score);
+  } // addScore
 
   spawnNextPiece() {
     if (this.gameOver) return;
@@ -198,6 +145,7 @@ export class TetrisModel extends AbstractModel {
   hardDropActivePiece() {
     if (!this.activePiece || this.isFastDropping) return;
     this.isFastDropping = true;
+    this.dropStartY = this.activePiece.gridY + 1;
   } // hardDropActivePiece
 
   canMove(piece, dx, dy) {
@@ -262,8 +210,8 @@ export class TetrisModel extends AbstractModel {
       this.level = 9;
     }
 
-    this.linesEntity.setText(this.lines.toString());
-    this.levelEntity.setText(this.level.toString());
+    this.infoEntity.updateLines(this.lines);
+    this.infoEntity.updateLevel(this.level);
   } // updateLinesAndLevel
 
   clearLines() {
@@ -328,6 +276,17 @@ export class TetrisModel extends AbstractModel {
           this.activePiece.gridY += 1;
           this.activePiece.y = this.activePiece.gridY * TetrisConstants.BLOCK_SIZE;
         } else {
+          const dropBonus = this.dropStartY * 2 + this.level;
+          this.addScore(dropBonus);
+
+          const baseReward = Math.floor(this.level / 2) + 6;
+          setTimeout(() => {
+            if (!this.gameOver) {
+              this.addScore(baseReward);
+              this.drawModel();
+            }
+          }, 60);
+
           this.lockPiece(this.activePiece);
           this.activePiece = null;
           this.clearLines();

@@ -76,9 +76,9 @@ export class TetrisInputController {
             this.model.moveRight();
           } else if (action === 'rotate') {
             if (!touchGameControl.hasRotated) {
-               this.model.rotateActivePiece();
-               touchGameControl.hasRotated = true;
-             }
+              this.model.rotateActivePiece();
+              touchGameControl.hasRotated = true;
+            }
           }
         }
       }
