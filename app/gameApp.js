@@ -1,13 +1,17 @@
 /**/
-const { Version } = await import('./version.js?ver=' + window.srcVersion);
 const { AbstractApp } = await import('./svision/js/abstractApp.js?ver=' + window.srcVersion);
+const { MenuModel } = await import('./menuModel.js?ver=' + window.srcVersion);
 const { TetrisModel } = await import('./tetrisModel.js?ver=' + window.srcVersion);
+const { Version } = await import('./version.js?ver=' + window.srcVersion);
 const { ZXFonts8x8 } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxFonts8x8.js?ver=' + window.srcVersion);
+const { ZXResetModel } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxResetModel.js?ver=' + window.srcVersion);
 /*/
-import Version from './version.js';
 import AbstractApp from './svision/js/abstractApp.js';
+import MenuModel from './menuModel.js';
 import TetrisModel from './tetrisModel.js';
+import Version from './version.js';
 import ZXFonts8x8 from './svision/js/platform/canvas2D/zxSpectrum/zxFonts8x8.js';
+import ZXResetModel from './svision/js/platform/canvas2D/zxSpectrum/zxResetModel.js';
 /**/
 // begin code
 
@@ -16,14 +20,19 @@ export class GameApp extends AbstractApp {
     super(platform, 'bodyApp', importPath, wsURL);
 
     this.version = Version;
+    this.copyright = '©␣2026␣Filip␣Nevrala, CC␣BY⋅NC⋅SA';
     this.devModeName = devModeName;
     this.appIconSprite = appIconSprite;
 
     this.fonts = {
-      zxFonts8x8: new ZXFonts8x8(this, false),
+      zxFonts8x8: new ZXFonts8x8(this, true),
+      zxFonts8x8Mono: new ZXFonts8x8(this, false),
     };
 
-    this.fonts.zxFonts8x8.addGlyphs('Σ', 'FE4020102040FE00');
+    this.fonts.zxFonts8x8Mono.addGlyphs('Σ', 'FE4020102040FE00');
+
+    this.fonts.zxFonts8x8.addGlyphs('‗⋅', '000000000000F8F80000000030000000');
+    this.fonts.zxFonts8x8.addSpace('␣', { width: 3, breaking: false, stretch: false });
 
     this.controlsOptions = {
       keyboard: {
@@ -32,6 +41,14 @@ export class GameApp extends AbstractApp {
           { action: 'left', label: 'MOVE LEFT' },
           { action: 'right', label: 'MOVE RIGHT' },
           { action: 'rotate', label: 'ROTATE' },
+          { action: 'hardDrop', label: 'HARD DROP' },
+        ],
+      },
+      mouse: {
+        device: 'mouse',
+        keys: [
+          { action: 'left', label: 'MOVE LEFT' },
+          { action: 'right', label: 'MOVE RIGHT' },
           { action: 'hardDrop', label: 'HARD DROP' },
         ],
       },
@@ -79,12 +96,13 @@ export class GameApp extends AbstractApp {
 
     this.controls = {
       keyboard: this.getControls('keyboard'),
+      mouse: this.getControls('mouse'),
       gamepads: this.getControls('gamepads'),
       touchscreen: this.getControls('touchscreen'),
     };
 
     this.id = 'GameApp';
-    this.setModel('TetrisModel');
+    this.setModel('LoadingModel');
   } // constructor
 
   getControls(device) {
@@ -92,6 +110,9 @@ export class GameApp extends AbstractApp {
     switch (device) {
       case 'keyboard':
         result = { left: 'ArrowLeft', right: 'ArrowRight', hardDrop: ' ', rotate: 'ArrowUp' };
+        break;
+      case 'mouse': 
+        result = { enable: false, left: 'Mouse1', right: 'Mouse2', hardDrop: 'Mouse4' };
         break;
       case 'gamepads':
         result = { supported: false, devices: {} };
@@ -109,6 +130,12 @@ export class GameApp extends AbstractApp {
     }
 
     switch (model) {
+      case 'LoadingModel':
+        this.model = new ZXResetModel(this, this.copyright);
+        break;
+      case 'MenuModel':
+        this.model = new MenuModel(this, 0);
+        break;
       case 'TetrisModel':
         this.model = new TetrisModel(this);
         break;

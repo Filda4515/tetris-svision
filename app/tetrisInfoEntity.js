@@ -29,7 +29,7 @@ export class TetrisInfoEntity extends AbstractEntity {
     super.init();
 
     const UI = TetrisConstants.UI;
-    const font = this.app.fonts.zxFonts8x8;
+    const font = this.app.fonts.zxFonts8x8Mono;
 
     const CONTENT_LEFT = UI.OUTER_LEFT_GAP + 2;
     const INNER_WHITE_LINE_X = CONTENT_LEFT + UI.INNER_WIDTH;
