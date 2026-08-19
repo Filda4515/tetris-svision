@@ -23,6 +23,8 @@ export class GameApp extends AbstractApp {
       zxFonts8x8: new ZXFonts8x8(this, false),
     };
 
+    this.fonts.zxFonts8x8.addGlyphs('Σ', 'FE4020102040FE00');
+
     this.controlsOptions = {
       keyboard: {
         device: 'keyboard',

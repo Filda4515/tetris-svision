@@ -4,6 +4,7 @@ const { TetrisBoardEntity } = await import('./tetrisBoardEntity.js?ver=' + windo
 const { TetrominoEntity } = await import('./tetrominoEntity.js?ver=' + window.srcVersion);
 const { TetrisInputController } = await import('./tetrisInputController.js?ver=' + window.srcVersion);
 const { TetrisInfoEntity } = await import('./tetrisInfoEntity.js?ver=' + window.srcVersion);
+const { TetrisRightMenuEntity } = await import('./tetrisRightMenuEntity.js?ver=' + window.srcVersion);
 const { ZXColor } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxColor.js?ver=' + window.srcVersion);
 const { TetrisConstants, TETROMINOES_DATA } = await import('./tetrisConstants.js?ver=' + window.srcVersion);
 /*/
@@ -12,8 +13,9 @@ import TetrisBoardEntity from './tetrisBoardEntity.js';
 import TetrominoEntity from './tetrominoEntity.js';
 import TetrisInputController from './tetrisInputController.js';
 import TetrisInfoEntity from './tetrisInfoEntity.js';
+import TetrisRightMenuEntity from './tetrisRightMenuEntity.js';
 import ZXColor from './svision/js/platform/canvas2D/zxSpectrum/zxColor.js';
-import TetrisConstants from './tetrisConstants.js';
+import TetrisConstants, { TETROMINOES_DATA } from './tetrisConstants.js';
 /**/
 // begin code
 
@@ -21,8 +23,10 @@ export class TetrisModel extends AbstractModel {
   constructor(app) {
     super(app);
     this.id = 'TetrisModel';
+
     this.boardEntity = null;
     this.infoEntity = null;
+    this.rightMenuEntity = null;
 
     this.activePiece = null;
     this.lastDropTime = 0;
@@ -40,6 +44,8 @@ export class TetrisModel extends AbstractModel {
     this.score = 0;
     this.lines = 0;
     this.level = 0;
+    this.statsCount = [0, 0, 0, 0, 0, 0, 0];
+    this.statsSum = 0;
 
     this.inputController = new TetrisInputController(this);
   } // constructor
@@ -47,21 +53,39 @@ export class TetrisModel extends AbstractModel {
   init() {
     super.init();
 
-    this.borderEntity.bkColor = ZXColor.brightBlue;
-    this.desktopEntity.bkColor = ZXColor.brightRed;
+    this.borderEntity.bkColor = ZXColor.black;
+    this.desktopEntity.bkColor = ZXColor.brightCyan;
 
-    const boardWidth = TetrisConstants.BOARD_COLS * TetrisConstants.BLOCK_SIZE;
-    const boardHeight = TetrisConstants.BOARD_ROWS * TetrisConstants.BLOCK_SIZE;
-    const boardX = Math.floor((this.desktopWidth - boardWidth) / 2);
-    const boardY = Math.floor((this.desktopHeight - boardHeight) / 2);
+    const cx = Math.floor(this.desktopWidth / 2);
+    const cy = Math.floor(this.desktopHeight / 2);
 
-    this.boardEntity = new TetrisBoardEntity(this.desktopEntity, boardX, boardY, boardWidth, boardHeight);
+    const UI = TetrisConstants.UI;
+
+    const bdW = TetrisConstants.BOARD_COLS * TetrisConstants.BLOCK_SIZE;
+    const bdH = TetrisConstants.BOARD_ROWS * TetrisConstants.BLOCK_SIZE;
+    const bdX = cx - Math.floor(bdW / 2);
+    const bdY = cy - Math.floor(bdH / 2) - UI.Y_SHIFT;
+
+    const lmW = UI.MENU_WIDTH;
+    const lmX = bdX - UI.GAP - lmW;
+    const lmY = 0;
+    const lmH = this.desktopHeight;
+
+    const rmW = UI.MENU_WIDTH + 2;
+    const rmX = bdX + bdW + UI.GAP;
+    const rmY = 0;
+    const rmH = this.desktopHeight;
+
+    const frame = { lmX, lmY, lmW, lmH, rmX, rmY, rmW, rmH };
+    this.boardEntity = new TetrisBoardEntity(this.desktopEntity, bdX, bdY, bdW, bdH, frame);
     this.boardEntity.boardGrid = this.boardGrid;
     this.desktopEntity.addEntity(this.boardEntity);
 
-    const panelX = boardX + TetrisConstants.UI_PANEL_OFFSET_X;
-    this.infoEntity = new TetrisInfoEntity(this.desktopEntity, panelX, boardY, 64, boardHeight);
+    this.infoEntity = new TetrisInfoEntity(this.desktopEntity, lmX, lmY, lmW, lmH);
     this.desktopEntity.addEntity(this.infoEntity);
+
+    this.rightMenuEntity = new TetrisRightMenuEntity(this.desktopEntity, rmX, rmY, rmW, rmH);
+    this.desktopEntity.addEntity(this.rightMenuEntity);
 
     this.spawnNextPiece();
   } // init
@@ -81,6 +105,12 @@ export class TetrisModel extends AbstractModel {
     }
 
     this.lastPieceIndex = nextIndex;
+
+    this.statsCount[nextIndex]++;
+    this.statsSum++;
+    if (this.infoEntity) {
+      this.infoEntity.updateStats(nextIndex, this.statsCount[nextIndex], this.statsSum);
+    }
 
     const data = TETROMINOES_DATA[nextIndex];
     const initialMatrix = data.states[0];
@@ -111,7 +141,7 @@ export class TetrisModel extends AbstractModel {
   moveLeft() {
     if (!this.isFastDropping && this.canMove(this.activePiece, -1, 0)) {
       this.activePiece.gridX -= 1;
-      this.activePiece.x = this.activePiece.gridX * TetrisConstants.BLOCK_SIZE;
+      this.activePiece.x = this.boardEntity.fieldOffsetX + this.activePiece.gridX * TetrisConstants.BLOCK_SIZE;
       this.drawModel();
     }
   } // moveLeft
@@ -119,7 +149,7 @@ export class TetrisModel extends AbstractModel {
   moveRight() {
     if (!this.isFastDropping && this.canMove(this.activePiece, 1, 0)) {
       this.activePiece.gridX += 1;
-      this.activePiece.x = this.activePiece.gridX * TetrisConstants.BLOCK_SIZE;
+      this.activePiece.x = this.boardEntity.fieldOffsetX + this.activePiece.gridX * TetrisConstants.BLOCK_SIZE;
       this.drawModel();
     }
   } // moveRight
@@ -238,6 +268,9 @@ export class TetrisModel extends AbstractModel {
     }
 
     if (linesCleared > 0) {
+      const lineReward = 8 + 6 * this.level;
+      this.addScore(linesCleared * lineReward);
+
       this.updateLinesAndLevel(linesCleared);
 
       if (this.boardEntity.drawingCache?.[0]?.cleanCache) {
@@ -274,12 +307,13 @@ export class TetrisModel extends AbstractModel {
       if (this.activePiece) {
         if (this.canMove(this.activePiece, 0, 1)) {
           this.activePiece.gridY += 1;
-          this.activePiece.y = this.activePiece.gridY * TetrisConstants.BLOCK_SIZE;
+          this.activePiece.y = this.boardEntity.fieldOffsetY + this.activePiece.gridY * TetrisConstants.BLOCK_SIZE;
         } else {
           const dropBonus = this.dropStartY * 2 + this.level;
           this.addScore(dropBonus);
 
           const baseReward = Math.floor(this.level / 2) + 6;
+
           setTimeout(() => {
             if (!this.gameOver) {
               this.addScore(baseReward);
@@ -305,8 +339,11 @@ export class TetrisModel extends AbstractModel {
       if (this.activePiece) {
         if (this.canMove(this.activePiece, 0, 1)) {
           this.activePiece.gridY += 1;
-          this.activePiece.y = this.activePiece.gridY * TetrisConstants.BLOCK_SIZE;
+          this.activePiece.y = this.boardEntity.fieldOffsetY + this.activePiece.gridY * TetrisConstants.BLOCK_SIZE;
         } else {
+          const baseReward = Math.floor(this.level / 2) + 6;
+          this.addScore(baseReward);
+
           this.lockPiece(this.activePiece);
           this.activePiece = null;
           this.clearLines();

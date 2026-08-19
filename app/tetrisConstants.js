@@ -12,11 +12,56 @@ export const TetrisConstants = {
   BOARD_ROWS: 20,
   DROP_DELAYS_MS: [800, 720, 630, 550, 470, 380, 300, 220, 130, 100],
 
-  UI_PANEL_OFFSET_X: -64,
-  UI_LABEL_WIDTH: 56,
-  UI_LABEL_HEIGHT: 8,
-  UI_LINE_SPACING: 10,
-  UI_BLOCK_SPACING: 24,
+  UI: {
+    MENU_WIDTH: 56,
+    FONT_SIZE: 8,
+
+    OUTER_LEFT_GAP: 1,
+    INNER_WIDTH: 49,
+
+    TOP_BOX_WIDTH: 42,
+    TOP_BOX_MARGIN: {
+      TOP: 6,
+      LEFT: 1,
+      RIGHT: 1,
+    },
+    TOP_BLUE_HEIGHT: 48,
+
+    SCORE_GAP: 2,
+    SCORE_MARGIN: {
+      TOP: 4,
+      RIGHT: 1,
+      BOTTOM: 4,
+    },
+
+    STATS_MARGIN: {
+      TOP: 7,
+      BOTTOM: 4,
+    },
+    STATS_GAP: 6,
+
+    SIGMA_MARGIN: {
+      TOP: 5,
+      LEFT: 1,
+      BOTTOM: 1,
+    },
+
+    GAP: 8,
+    Y_SHIFT: 8,
+
+    C_BG_BLACK: ZXColor.black,
+    C_BG_BLUE: ZXColor.blue,
+    C_BG_CYAN: ZXColor.brightCyan,
+    C_BORDER: ZXColor.brightWhite,
+
+    C_LBL_FG: ZXColor.black,
+    C_LBL_BG: ZXColor.brightYellow,
+    C_VAL_FG: ZXColor.brightWhite,
+    C_VAL_BG: false,
+
+    // [L (White), I (Yellow), T (Cyan), Z (Green), S (Magenta), O (Red), J (Blue)]
+    STATS_ORDER: [6, 0, 2, 4, 3, 1, 5],
+  },
 };
 
 export const TETROMINOES_DATA = [

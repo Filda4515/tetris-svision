@@ -19,8 +19,8 @@ export class TetrominoEntity extends AbstractEntity {
     const matrixRows = initialMatrix.length;
     const matrixCols = initialMatrix[0].length;
 
-    const posX = x * blockSize;
-    const posY = y * blockSize;
+    const posX = parent.fieldOffsetX + x * blockSize;
+    const posY = parent.fieldOffsetY + y * blockSize;
     const width = matrixCols * blockSize;
     const height = matrixRows * blockSize;
 
