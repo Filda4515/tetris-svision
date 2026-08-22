@@ -1,15 +1,17 @@
 /**/
-const { AbstractEntity } = await import('./svision/js/abstractEntity.js?ver='+window.srcVersion);
+const { AbstractEntity } = await import('./svision/js/abstractEntity.js?ver=' + window.srcVersion);
 const { AbstractModel } = await import('./svision/js/abstractModel.js?ver=' + window.srcVersion);
 const { MenuEntity } = await import('./svision/js/platform/canvas2D/menuEntity.js?ver=' + window.srcVersion);
 const { TextEntity } = await import('./svision/js/platform/canvas2D/textEntity.js?ver=' + window.srcVersion);
 const { ZXColor } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxColor.js?ver=' + window.srcVersion);
+const { ZXPlayerNameEntity } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxPlayerNameEntity.js?ver=' + window.srcVersion);
 /*/
 import AbstractEntity from './svision/js/abstractEntity.js';
 import AbstractModel from './svision/js/abstractModel.js';
 import MenuEntity from './svision/js/platform/canvas2D/menuEntity.js';
 import TextEntity from './svision/js/platform/canvas2D/textEntity.js';
 import ZXColor from './svision/js/platform/canvas2D/zxSpectrum/zxColor.js';
+import ZXPlayerNameEntity from './svision/js/platform/canvas2D/zxSpectrum/zxPlayerNameEntity.js';
 /**/
 // begin code
 
@@ -18,7 +20,10 @@ export class MenuModel extends AbstractModel {
     super(app);
     this.id = 'MenuModel';
 
-    this.menuItems = [{ t1: 'START GAME', event: { id: 'startGame' } }];
+    this.menuItems = [
+      { t1: 'START GAME', event: { id: 'startGame' } },
+      { t1: 'PLAYER NAME', event: { id: 'setPlayerName' } },
+    ];
 
     this.menuOptions = {
       fonts: this.app.fonts.zxFonts8x8,
@@ -68,15 +73,15 @@ export class MenuModel extends AbstractModel {
     this.desktopEntity.addEntity(this.copyrightEntity);
 
     this.app.stack.flashState = false;
-    this.sendEvent(330, {id: 'changeFlashState'});
-
-    this.fetchData('menu.data', {key: 'menu', when: 'required'}, {});
-
+    this.sendEvent(330, { id: 'changeFlashState' });
   } // init
 
   getMenuData(self, key, row) {
     if (key === 'numberOfItems') {
       return self.menuItems.length;
+    }
+    if (key === 't2' && row === 1) {
+      return self.app.playerName;
     }
     if (key in self.menuItems[row]) {
       return self.menuItems[row][key];
@@ -91,7 +96,14 @@ export class MenuModel extends AbstractModel {
 
     switch (event.id) {
       case 'startGame':
+        if (!this.app.playerName.length) {
+          this.desktopEntity.addModalEntity(new ZXPlayerNameEntity(this.desktopEntity, 27, 24, 202, 134, true));
+          return true;
+        }
         this.app.setModel('TetrisModel');
+        return true;
+      case 'setPlayerName':
+        this.desktopEntity.addModalEntity(new ZXPlayerNameEntity(this.desktopEntity, 27, 24, 202, 134, false));
         return true;
     }
     return false;
@@ -99,6 +111,11 @@ export class MenuModel extends AbstractModel {
 
   loopModel(timestamp) {
     super.loopModel(timestamp);
+
+    if (this.desktopEntity.modalEntity) {
+      this.desktopEntity.modalEntity.loopEntity(timestamp);
+    }
+
     this.drawModel();
   } // loopModel
 }
