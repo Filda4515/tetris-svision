@@ -1,6 +1,7 @@
 /**/
 const { AbstractEntity } = await import('./svision/js/abstractEntity.js?ver=' + window.srcVersion);
 const { AbstractModel } = await import('./svision/js/abstractModel.js?ver=' + window.srcVersion);
+const { HallOfFameEntity } = await import('./hallOfFameEntity.js?ver=' + window.srcVersion);
 const { MenuEntity } = await import('./svision/js/platform/canvas2D/menuEntity.js?ver=' + window.srcVersion);
 const { TextEntity } = await import('./svision/js/platform/canvas2D/textEntity.js?ver=' + window.srcVersion);
 const { ZXColor } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxColor.js?ver=' + window.srcVersion);
@@ -8,6 +9,7 @@ const { ZXPlayerNameEntity } = await import('./svision/js/platform/canvas2D/zxSp
 /*/
 import AbstractEntity from './svision/js/abstractEntity.js';
 import AbstractModel from './svision/js/abstractModel.js';
+import HallOfFameEntity from './hallOfFameEntity.js';
 import MenuEntity from './svision/js/platform/canvas2D/menuEntity.js';
 import TextEntity from './svision/js/platform/canvas2D/textEntity.js';
 import ZXColor from './svision/js/platform/canvas2D/zxSpectrum/zxColor.js';
@@ -23,6 +25,7 @@ export class MenuModel extends AbstractModel {
     this.menuItems = [
       { t1: 'START GAME', event: { id: 'startGame' } },
       { t1: 'PLAYER NAME', event: { id: 'setPlayerName' } },
+      { t1: 'HALL OF FAME', event: { id: 'showHallOfFame' } },
     ];
 
     this.menuOptions = {
@@ -104,6 +107,9 @@ export class MenuModel extends AbstractModel {
         return true;
       case 'setPlayerName':
         this.desktopEntity.addModalEntity(new ZXPlayerNameEntity(this.desktopEntity, 27, 24, 202, 134, false));
+        return true;
+      case 'showHallOfFame':
+        this.desktopEntity.addModalEntity(new HallOfFameEntity(this.desktopEntity, 27, 24, 202, 134));
         return true;
     }
     return false;
