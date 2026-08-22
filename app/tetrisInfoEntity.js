@@ -275,10 +275,41 @@ export class TetrisInfoEntity extends AbstractEntity {
       // SIGMA
       const SIGMA_BOTTOM = STATS_BOTTOM + UI.SIGMA_MARGIN.TOP + UI.FONT_SIZE + UI.SIGMA_MARGIN.BOTTOM;
 
-      c.paint(CONTENT_LEFT, SIGMA_BOTTOM, UI.INNER_WIDTH - 1, 1, UI.C_BORDER); // bottom
+      c.paint(CONTENT_LEFT, SIGMA_BOTTOM, UI.INNER_WIDTH - 1, 1, ZXColor.brightCyan); // bottom
 
       // BOTTOM BEVEL
+      const BEVEL_TOP = SIGMA_BOTTOM + 2;
+      const BEVEL_HEIGHT = this.height - BEVEL_TOP;
+      const BEVEL_LEFT = CONTENT_LEFT + 1;
 
+      if (BEVEL_HEIGHT > 0) {
+        c.paint(BEVEL_LEFT + 1, BEVEL_TOP, UI.INNER_WIDTH - 2, BEVEL_HEIGHT, UI.C_BG_CYAN); // cyan bg
+
+        const lineWidth = 3;
+        const half = Math.floor(lineWidth / 2);
+        const bottomY = this.height - 1;
+
+        const diagonalRun = Math.min(BEVEL_HEIGHT, Math.floor(UI.INNER_WIDTH / 2));
+
+        for (let i = 0; i <= diagonalRun; i++) {
+          c.paint(BEVEL_LEFT + i - half, BEVEL_TOP + i - half, lineWidth, lineWidth, UI.C_BG_BLACK); // left leg
+          c.paint(BEVEL_LEFT + UI.INNER_WIDTH - i - half - 1, BEVEL_TOP + i - half, lineWidth, lineWidth, UI.C_BG_BLACK); // right leg
+        }
+
+        const legBottomX = BEVEL_LEFT + diagonalRun;
+        const legBottomY = BEVEL_TOP + diagonalRun;
+
+        if (legBottomY < bottomY) {
+          const barHeight = bottomY - legBottomY + 1;
+          c.paint(legBottomX - half, legBottomY, lineWidth, barHeight, UI.C_BG_BLACK); // left leg -> bottom
+          c.paint(CONTENT_LEFT + UI.INNER_WIDTH - legBottomX - half, legBottomY, lineWidth, barHeight, UI.C_BG_BLACK); // right leg -> bottom
+        } else {
+          const rightLegX = BEVEL_LEFT + UI.INNER_WIDTH - diagonalRun;
+          if (rightLegX > legBottomX) {
+            c.paint(legBottomX, legBottomY - lineWidth, rightLegX - legBottomX, lineWidth, UI.C_BG_BLACK);
+          }
+        }
+      }
     }
 
     this.app.layout.paintCache(this, 0);

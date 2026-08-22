@@ -12,6 +12,8 @@ export const TetrisConstants = {
   BOARD_ROWS: 20,
   DROP_DELAYS_MS: [800, 720, 630, 550, 470, 380, 300, 220, 130, 100],
 
+  TAPER_STEPS: 6,
+
   UI: {
     MENU_WIDTH: 56,
     FONT_SIZE: 8,
@@ -45,9 +47,6 @@ export const TetrisConstants = {
       LEFT: 1,
       BOTTOM: 1,
     },
-
-    GAP: 8,
-    Y_SHIFT: 8,
 
     C_BG_BLACK: ZXColor.black,
     C_BG_BLUE: ZXColor.blue,

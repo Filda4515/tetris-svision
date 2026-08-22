@@ -33,28 +33,6 @@ export class TetrisBoardEntity extends AbstractEntity {
     this.boardGrid = null;
   } // constructor
 
-  drawLine(x0, y0, x1, y1, color) {
-    let dx = Math.abs(x1 - x0);
-    let dy = Math.abs(y1 - y0);
-    let sx = x0 < x1 ? 1 : -1;
-    let sy = y0 < y1 ? 1 : -1;
-    let err = dx - dy;
-
-    while (true) {
-      this.app.layout.paint(this, x0, y0, 1, 1, color);
-      if (x0 === x1 && y0 === y1) break;
-      let e2 = 2 * err;
-      if (e2 > -dy) {
-        err -= dy;
-        x0 += sx;
-      }
-      if (e2 < dx) {
-        err += dx;
-        y0 += sy;
-      }
-    }
-  } // drawLine
-
   drawSideGaps() {
     const stripTop = Math.max(this.fieldOffsetY, this.leftMenuTR.y, this.rightMenuTL.y);
     const stripBottom = Math.min(this.fieldOffsetY + this.fieldHeight, this.leftMenuBR.y, this.rightMenuBR.y);
@@ -68,21 +46,47 @@ export class TetrisBoardEntity extends AbstractEntity {
     this.app.layout.paint(this, rightStripX, stripTop, this.width - rightStripX, stripH, ZXColor.brightCyan);
   } // drawSideGaps
 
+  fillStaircaseTriangle(fromPoint, toPoint, edgeX, color, steps = TetrisConstants.TAPER_STEPS) {
+    const totalDy = toPoint.y - fromPoint.y;
+    if (totalDy === 0) return;
+ 
+    const dir = totalDy > 0 ? 1 : -1;
+    const absDy = Math.abs(totalDy);
+ 
+    let y = fromPoint.y;
+    for (let s = 0; s < steps; s++) {
+      const rowsThisStep = Math.round(((s + 1) * absDy) / steps) - Math.round((s * absDy) / steps);
+      if (rowsThisStep <= 0) continue;
+ 
+      const t = s / steps;
+      const xOnLine = Math.round(fromPoint.x + (toPoint.x - fromPoint.x) * t);
+ 
+      const xStart = Math.min(edgeX, xOnLine);
+      const xEnd = Math.max(edgeX, xOnLine);
+      const rowStart = dir > 0 ? y : y - rowsThisStep + 1;
+ 
+      if (xEnd > xStart) {
+        this.app.layout.paint(this, xStart, rowStart, xEnd - xStart, rowsThisStep, color);
+      }
+      y += dir * rowsThisStep;
+    }
+  } // fillStaircaseTriangle
+
   drawWellBevel() {
     const fx = this.fieldOffsetX;
     const fy = this.fieldOffsetY;
-
+ 
     const boardTL = { x: fx, y: fy };
     const boardTR = { x: fx + this.fieldWidth, y: fy };
     const boardBL = { x: fx, y: fy + this.fieldHeight };
     const boardBR = { x: fx + this.fieldWidth, y: fy + this.fieldHeight };
-
+ 
     const bevelColor = ZXColor.brightCyan;
-
-    this.drawLine(this.leftMenuTR.x, this.leftMenuTR.y, boardTL.x, boardTL.y, bevelColor);
-    this.drawLine(this.leftMenuBR.x, this.leftMenuBR.y, boardBL.x, boardBL.y, bevelColor);
-    this.drawLine(this.rightMenuTL.x, this.rightMenuTL.y, boardTR.x, boardTR.y, bevelColor);
-    this.drawLine(this.rightMenuBR.x, this.rightMenuBR.y, boardBR.x, boardBR.y, bevelColor);
+ 
+    this.fillStaircaseTriangle(this.leftMenuTR, boardTL, 0, bevelColor);
+    this.fillStaircaseTriangle(this.leftMenuBR, boardBL, 0, bevelColor);
+    this.fillStaircaseTriangle(this.rightMenuTL, boardTR, this.width, bevelColor);
+    this.fillStaircaseTriangle(this.rightMenuBR, boardBR, this.width, bevelColor);
   } // drawWellBevel
 
   drawEntity() {

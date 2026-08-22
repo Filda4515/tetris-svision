@@ -64,15 +64,15 @@ export class TetrisModel extends AbstractModel {
     const bdW = TetrisConstants.BOARD_COLS * TetrisConstants.BLOCK_SIZE;
     const bdH = TetrisConstants.BOARD_ROWS * TetrisConstants.BLOCK_SIZE;
     const bdX = cx - Math.floor(bdW / 2);
-    const bdY = cy - Math.floor(bdH / 2) - UI.Y_SHIFT;
+    const bdY = cy - Math.floor(bdH / 2);
 
     const lmW = UI.MENU_WIDTH;
-    const lmX = bdX - UI.GAP - lmW;
+    const lmX = bdX - TetrisConstants.BLOCK_SIZE - lmW;
     const lmY = 0;
     const lmH = this.desktopHeight;
 
     const rmW = UI.MENU_WIDTH + 2;
-    const rmX = bdX + bdW + UI.GAP;
+    const rmX = bdX + bdW + TetrisConstants.BLOCK_SIZE;
     const rmY = 0;
     const rmH = this.desktopHeight;
 

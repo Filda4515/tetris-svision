@@ -103,6 +103,7 @@ export class GameApp extends AbstractApp {
 
     this.id = 'GameApp';
     this.setModel('LoadingModel');
+    // this.setModel('TetrisModel');
   } // constructor
 
   getControls(device) {
