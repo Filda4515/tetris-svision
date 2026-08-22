@@ -12,7 +12,10 @@ export const TetrisConstants = {
   BOARD_ROWS: 20,
   DROP_DELAYS_MS: [800, 720, 630, 550, 470, 380, 300, 220, 130, 100],
 
-  TAPER_STEPS: 6,
+  BOARD_GAP: 24,
+  TAPER_TOP: 9,
+  TAPER_BOTTOM: 23,
+  TOP_BEVEL_OFFSET: 4,
 
   UI: {
     MENU_WIDTH: 56,

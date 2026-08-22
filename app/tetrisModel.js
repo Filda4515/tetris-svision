@@ -59,22 +59,23 @@ export class TetrisModel extends AbstractModel {
     this.desktopEntity.bkColor = ZXColor.brightCyan;
 
     const cx = Math.floor(this.desktopWidth / 2);
-    const cy = Math.floor(this.desktopHeight / 2);
 
     const UI = TetrisConstants.UI;
 
     const bdW = TetrisConstants.BOARD_COLS * TetrisConstants.BLOCK_SIZE;
     const bdH = TetrisConstants.BOARD_ROWS * TetrisConstants.BLOCK_SIZE;
     const bdX = cx - Math.floor(bdW / 2);
-    const bdY = cy - Math.floor(bdH / 2);
+
+    const taperTotal = TetrisConstants.TAPER_TOP + TetrisConstants.TAPER_BOTTOM;
+    const bdY = Math.round(((this.desktopHeight - bdH) * TetrisConstants.TAPER_TOP) / taperTotal);
 
     const lmW = UI.MENU_WIDTH;
-    const lmX = bdX - TetrisConstants.BLOCK_SIZE - lmW;
+    const lmX = bdX - TetrisConstants.BOARD_GAP - lmW;
     const lmY = 0;
     const lmH = this.desktopHeight;
 
     const rmW = UI.MENU_WIDTH + 2;
-    const rmX = bdX + bdW + TetrisConstants.BLOCK_SIZE;
+    const rmX = bdX + bdW + TetrisConstants.BOARD_GAP;
     const rmY = 0;
     const rmH = this.desktopHeight;
 
