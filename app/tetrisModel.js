@@ -1,21 +1,23 @@
 /**/
 const { AbstractModel } = await import('./svision/js/abstractModel.js?ver=' + window.srcVersion);
 const { TetrisBoardEntity } = await import('./tetrisBoardEntity.js?ver=' + window.srcVersion);
-const { TetrominoEntity } = await import('./tetrominoEntity.js?ver=' + window.srcVersion);
+const { TetrisConstants, TETROMINOES_DATA } = await import('./tetrisConstants.js?ver=' + window.srcVersion);
+const { TetrisGameOverEntity } = await import('./tetrisGameOverEntity.js?ver=' + window.srcVersion);
 const { TetrisInputController } = await import('./tetrisInputController.js?ver=' + window.srcVersion);
 const { TetrisInfoEntity } = await import('./tetrisInfoEntity.js?ver=' + window.srcVersion);
 const { TetrisRightMenuEntity } = await import('./tetrisRightMenuEntity.js?ver=' + window.srcVersion);
+const { TetrominoEntity } = await import('./tetrominoEntity.js?ver=' + window.srcVersion);
 const { ZXColor } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxColor.js?ver=' + window.srcVersion);
-const { TetrisConstants, TETROMINOES_DATA } = await import('./tetrisConstants.js?ver=' + window.srcVersion);
 /*/
 import AbstractModel from './svision/js/abstractModel.js';
 import TetrisBoardEntity from './tetrisBoardEntity.js';
-import TetrominoEntity from './tetrominoEntity.js';
+import TetrisConstants, { TETROMINOES_DATA } from './tetrisConstants.js';
+import TetrisGameOverEntity from './tetrisGameOverEntity.js';
 import TetrisInputController from './tetrisInputController.js';
 import TetrisInfoEntity from './tetrisInfoEntity.js';
 import TetrisRightMenuEntity from './tetrisRightMenuEntity.js';
+import TetrominoEntity from './tetrominoEntity.js';
 import ZXColor from './svision/js/platform/canvas2D/zxSpectrum/zxColor.js';
-import TetrisConstants, { TETROMINOES_DATA } from './tetrisConstants.js';
 /**/
 // begin code
 
@@ -130,7 +132,13 @@ export class TetrisModel extends AbstractModel {
     if (!this.canMove(testPiece, 0, 0)) {
       this.gameOver = true;
       this.activePiece = null;
-      console.log('GAME OVER');
+      this.app.score = this.score;
+
+      const boxWidth = 140;
+      const boxHeight = 80;
+      const boxX = Math.floor((this.desktopWidth - boxWidth) / 2);
+      const boxY = Math.floor((this.desktopHeight - boxHeight) / 2);
+      this.desktopEntity.addModalEntity(new TetrisGameOverEntity(this.desktopEntity, boxX, boxY, boxWidth, boxHeight));
       return;
     }
 

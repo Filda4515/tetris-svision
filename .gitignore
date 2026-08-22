@@ -1,5 +1,7 @@
 .vscode/
 .idea/
 
+config/config.php
+
 run.bat
 router.php

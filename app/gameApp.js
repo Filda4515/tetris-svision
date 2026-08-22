@@ -149,6 +149,7 @@ export class GameApp extends AbstractApp {
       touchscreen: this.getControls('touchscreen'),
     };
 
+    this.score = 0;
     this.playerName = Tool.readCookie('playerName', '');
     this.id = 'GameApp';
     this.setModel('LoadingModel');
