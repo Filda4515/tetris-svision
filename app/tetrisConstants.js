@@ -7,7 +7,6 @@ import ZXColor from './svision/js/platform/canvas2D/zxSpectrum/zxColor.js';
 
 export const TetrisConstants = {
   BLOCK_SIZE: 8,
-  GRID_LINE_WIDTH: 1,
   BOARD_COLS: 10,
   BOARD_ROWS: 20,
   DROP_DELAYS_MS: [800, 720, 630, 550, 470, 380, 300, 220, 130, 100],

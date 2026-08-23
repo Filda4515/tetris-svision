@@ -13,7 +13,6 @@ export class TetrominoEntity extends AbstractEntity {
   constructor(parent, x, y, states, color) {
     const isInteractive = false;
     const blockSize = TetrisConstants.BLOCK_SIZE;
-    const subSize = blockSize - TetrisConstants.GRID_LINE_WIDTH;
 
     const initialMatrix = states[0];
     const matrixRows = initialMatrix.length;
@@ -35,7 +34,7 @@ export class TetrominoEntity extends AbstractEntity {
     this.blocks = [];
 
     for (let i = 0; i < 4; i++) {
-      const block = new AbstractEntity(this, 0, 0, subSize, subSize, isInteractive, color);
+      const block = new AbstractEntity(this, 0, 0, blockSize, blockSize, isInteractive, color);
       this.blocks.push(block);
       this.addEntity(block);
     }

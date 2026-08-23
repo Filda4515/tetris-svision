@@ -283,7 +283,6 @@ export class TetrisBoardEntity extends AbstractEntity {
     const fy = this.fieldOffsetY;
 
     if (this.boardGrid) {
-      const subSize = TetrisConstants.BLOCK_SIZE - TetrisConstants.GRID_LINE_WIDTH;
       for (let y = 0; y < TetrisConstants.BOARD_ROWS; y++) {
         for (let x = 0; x < TetrisConstants.BOARD_COLS; x++) {
           const blockColor = this.boardGrid[y][x];
@@ -293,8 +292,8 @@ export class TetrisBoardEntity extends AbstractEntity {
               this,
               fx + x * TetrisConstants.BLOCK_SIZE,
               fy + y * TetrisConstants.BLOCK_SIZE,
-              subSize,
-              subSize,
+              TetrisConstants.BLOCK_SIZE,
+              TetrisConstants.BLOCK_SIZE,
               blockColor,
             );
           }
