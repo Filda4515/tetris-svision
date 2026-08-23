@@ -2,6 +2,7 @@
 const { AbstractApp } = await import('./svision/js/abstractApp.js?ver=' + window.srcVersion);
 const { Fonts3x3 } = await import('./svision/js/platform/canvas2D/fonts3x3.js?ver=' + window.srcVersion);
 const { Fonts5x5 } = await import('./svision/js/platform/canvas2D/fonts5x5.js?ver=' + window.srcVersion);
+const { MainModel } = await import('./mainModel.js?ver='+window.srcVersion);
 const { MenuModel } = await import('./menuModel.js?ver=' + window.srcVersion);
 const { TetrisModel } = await import('./tetrisModel.js?ver=' + window.srcVersion);
 const { Tool } = await import('./svision/js/tool.js?ver=' + window.srcVersion);
@@ -12,6 +13,7 @@ const { ZXResetModel } = await import('./svision/js/platform/canvas2D/zxSpectrum
 import AbstractApp from './svision/js/abstractApp.js';
 import Fonts3x3 from './svision/js/platform/canvas2D/fonts3x3.js';
 import Fonts5x5 from './svision/js/platform/canvas2D/fonts5x5.js';
+import MainModel from './mainModel.js';
 import MenuModel from './menuModel.js';
 import TetrisModel from './tetrisModel.js';
 import Tool from './svision/js/tool.js';
@@ -187,9 +189,17 @@ export class GameApp extends AbstractApp {
       case 'MenuModel':
         this.model = new MenuModel(this, 0);
         break;
+      case 'MainModel':
+        this.model = new MainModel(this);
+        break;
       case 'TetrisModel':
         this.model = new TetrisModel(this);
         break;
+      case 'TetrisExitToMenu':
+        if (this.model && this.model.id === 'TetrisModel') {
+          this.model.showGameOver('MenuModel');
+        }
+        return;
     } // switch
 
     this.model.init();

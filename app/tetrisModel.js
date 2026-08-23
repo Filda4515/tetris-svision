@@ -1,5 +1,7 @@
 /**/
 const { AbstractModel } = await import('./svision/js/abstractModel.js?ver=' + window.srcVersion);
+const { BorderEntity } = await import('./borderEntity.js?ver=' + window.srcVersion);
+const { PauseGameEntity } = await import('./pauseGameEntity.js?ver=' + window.srcVersion);
 const { TetrisBoardEntity } = await import('./tetrisBoardEntity.js?ver=' + window.srcVersion);
 const { TetrisConstants, TETROMINOES_DATA } = await import('./tetrisConstants.js?ver=' + window.srcVersion);
 const { TetrisGameOverEntity } = await import('./tetrisGameOverEntity.js?ver=' + window.srcVersion);
@@ -10,6 +12,8 @@ const { TetrominoEntity } = await import('./tetrominoEntity.js?ver=' + window.sr
 const { ZXColor } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxColor.js?ver=' + window.srcVersion);
 /*/
 import AbstractModel from './svision/js/abstractModel.js';
+import BorderEntity from './borderEntity.js';
+import PauseGameEntity from './pauseGameEntity.js';
 import TetrisBoardEntity from './tetrisBoardEntity.js';
 import TetrisConstants, { TETROMINOES_DATA } from './tetrisConstants.js';
 import TetrisGameOverEntity from './tetrisGameOverEntity.js';
@@ -33,6 +37,7 @@ export class TetrisModel extends AbstractModel {
     this.activePiece = null;
     this.lastDropTime = 0;
     this.gameOver = false;
+    this.gameOverTimeout = null;
 
     this.isFastDropping = false;
     this.dropStartY = 0;
@@ -93,6 +98,10 @@ export class TetrisModel extends AbstractModel {
     this.spawnNextPiece();
   } // init
 
+  newBorderEntity() {
+    return new BorderEntity(true, false);
+  } // newBorderEntity
+
   addScore(points) {
     this.score += points;
     this.infoEntity.updateScore(this.score);
@@ -131,15 +140,7 @@ export class TetrisModel extends AbstractModel {
     };
 
     if (!this.canMove(testPiece, 0, 0)) {
-      this.gameOver = true;
-      this.activePiece = null;
-      this.app.score = this.score;
-
-      const boxWidth = 140;
-      const boxHeight = 80;
-      const boxX = Math.floor((this.desktopWidth - boxWidth) / 2);
-      const boxY = Math.floor((this.desktopHeight - boxHeight) / 2);
-      this.desktopEntity.addModalEntity(new TetrisGameOverEntity(this.desktopEntity, boxX, boxY, boxWidth, boxHeight));
+      this.showGameOver('MainModel');
       return;
     }
 
@@ -289,12 +290,53 @@ export class TetrisModel extends AbstractModel {
     }
   } // clearLines
 
+  showGameOver(targetModel) {
+    if (this.gameOver) return;
+    this.gameOver = true;
+    this.activePiece = null;
+    this.app.score = this.score;
+    this.app.gameOverTarget = targetModel;
+
+    if (this.desktopEntity.modalEntity) {
+      this.desktopEntity.modalEntity.shutdown();
+      this.desktopEntity.modalEntity = null;
+    }
+
+    const boxWidth = 140;
+    const boxHeight = 80;
+    const boxX = Math.floor((this.desktopWidth - boxWidth) / 2);
+    const boxY = Math.floor((this.desktopHeight - boxHeight) / 2);
+    this.desktopEntity.addModalEntity(new TetrisGameOverEntity(this.desktopEntity, boxX, boxY, boxWidth, boxHeight));
+
+    this.gameOverTimeout = setTimeout(() => {
+      this.app.setModel(this.app.gameOverTarget);
+    }, 3000);
+  } // showGameOver
+
   handleEvent(event) {
     if (super.handleEvent(event)) {
       return true;
     }
 
     if (this.gameOver) return false;
+
+    switch (event.id) {
+      case 'keyPress':
+        var key = event.key;
+        if (key.length == 1) {
+          key = key.toUpperCase();
+        }
+
+        switch (key) {
+          case 'Escape':
+          case 'GamepadExit':
+            if (!this.desktopEntity.modalEntity) {
+              this.desktopEntity.addModalEntity(new PauseGameEntity(this.desktopEntity, 52, 40, 153, 85, 'PAUSED', 'TetrisExitToMenu'));
+            }
+            return true;
+        }
+        break;
+    }
 
     if (this.inputController.handleEvent(event)) {
       return true;
@@ -305,6 +347,12 @@ export class TetrisModel extends AbstractModel {
 
   loopModel(timestamp) {
     super.loopModel(timestamp);
+
+    if (this.desktopEntity.modalEntity) {
+      this.desktopEntity.modalEntity.loopEntity(timestamp);
+      this.drawModel();
+      return;
+    }
 
     if (this.gameOver) return;
 
@@ -363,6 +411,15 @@ export class TetrisModel extends AbstractModel {
 
     this.drawModel();
   } // loopModel
+
+  shutdown() {
+    super.shutdown();
+
+    if (this.gameOverTimeout) {
+      clearTimeout(this.gameOverTimeout);
+      this.gameOverTimeout = null;
+    }
+  } // shutdown
 } // TetrisModel
 
 export default TetrisModel;

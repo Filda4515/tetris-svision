@@ -6,6 +6,7 @@ const { MenuEntity } = await import('./svision/js/platform/canvas2D/menuEntity.j
 const { TextEntity } = await import('./svision/js/platform/canvas2D/textEntity.js?ver=' + window.srcVersion);
 const { ZXColor } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxColor.js?ver=' + window.srcVersion);
 const { ZXPlayerNameEntity } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxPlayerNameEntity.js?ver=' + window.srcVersion);
+const { ZXWaitForAudioEventEntity } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxWaitForAudioEventEntity.js?ver='+window.srcVersion);
 /*/
 import AbstractEntity from './svision/js/abstractEntity.js';
 import AbstractModel from './svision/js/abstractModel.js';
@@ -14,6 +15,7 @@ import MenuEntity from './svision/js/platform/canvas2D/menuEntity.js';
 import TextEntity from './svision/js/platform/canvas2D/textEntity.js';
 import ZXColor from './svision/js/platform/canvas2D/zxSpectrum/zxColor.js';
 import ZXPlayerNameEntity from './svision/js/platform/canvas2D/zxSpectrum/zxPlayerNameEntity.js';
+import ZXWaitForAudioEventEntity from './svision/js/platform/canvas2D/zxSpectrum/zxWaitForAudioEventEntity.js';
 /**/
 // begin code
 
@@ -103,7 +105,14 @@ export class MenuModel extends AbstractModel {
           this.desktopEntity.addModalEntity(new ZXPlayerNameEntity(this.desktopEntity, 27, 24, 202, 134, true));
           return true;
         }
-        this.app.setModel('TetrisModel');
+        if (this.app.inputEventsManager.needEventForAudio()) {
+          this.desktopEntity.addModalEntity(
+            new ZXWaitForAudioEventEntity(this.desktopEntity, 64, 75, 128, 45, ZXColor.brightWhite, ZXColor.magenta, 'startGame2'),
+          );
+          return true;
+        }
+      case 'startGame2':
+        this.app.setModel('MainModel');
         return true;
       case 'setPlayerName':
         this.desktopEntity.addModalEntity(new ZXPlayerNameEntity(this.desktopEntity, 27, 24, 202, 134, false));
