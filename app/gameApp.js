@@ -167,11 +167,54 @@ export class GameApp extends AbstractApp {
       case 'mouse':
         result = { enable: false, left: 'Mouse1', right: 'Mouse2', hardDrop: 'Mouse4' };
         break;
+      case 'touchscreen':
+        result = { supported: false, type: 'tetrisLayout' };
+        break;
       case 'gamepads':
         result = { supported: false, devices: {} };
         break;
+    }
+
+    switch (device) {
+      case 'keyboard':
+      case 'mouse':
       case 'touchscreen':
-        result = { supported: false, type: 'tetrisLayout' };
+        var cfgString = Tool.readCookie(device, false);
+        if (cfgString !== false) {
+          try {
+            var cfg = JSON.parse(cfgString);
+            Object.keys(cfg).forEach((item) => {
+              result[item] = cfg[item];
+              if (device == 'touchscreen' && !(result[item] in this.controlsOptions.touchscreen.types)) {
+                result[item] = this.controlsOptions.touchscreen.types.keys[0];
+              }
+            });
+          } catch (error) {
+            console.error(error.message);
+          }
+        }
+        break;
+      case 'gamepads':
+        var devicesString = Tool.readCookie('gamepads', false);
+        if (devicesString !== false) {
+          try {
+            var devices = JSON.parse(devicesString);
+            if (Array.isArray(devices)) {
+              devices.forEach((id) => {
+                var deviceString = Tool.readCookie(id, false);
+                if (deviceString !== false) {
+                  try {
+                    result.devices[id] = JSON.parse(deviceString);
+                  } catch (error) {
+                    console.error(error.message);
+                  }
+                }
+              });
+            }
+          } catch (error) {
+            console.error(error.message);
+          }
+        }
         break;
     }
     return result;

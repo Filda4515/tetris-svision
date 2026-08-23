@@ -103,38 +103,33 @@ export class TetrisInputController {
           key = key.toUpperCase();
         }
 
+        const kb = this.app.controls.keyboard;
+
         switch (key) {
-          case this.app.controls.keyboard.left:
-          case 'A':
+          case kb.left:
           case 'GamepadLeft':
             this.model.moveLeft();
             return true;
-          case this.app.controls.keyboard.right:
-          case 'D':
+          case kb.right:
           case 'GamepadRight':
             this.model.moveRight();
             return true;
-          case this.app.controls.keyboard.down:
-          case ' ':
-          case 'Spacebar':
+          case kb.hardDrop:
           case 'GamepadDown':
             this.model.hardDropActivePiece();
             return true;
-          case this.app.controls.keyboard.rotate:
-          case 'W':
+          case kb.rotate:
           case 'GamepadOK':
             this.model.rotateActivePiece();
             return true;
         }
         break;
-
       case 'keyMove':
         if (event.key === 'Touch') {
           this.touchMove(event);
           return true;
         }
         break;
-
       case 'keyRelease':
         if (event.key === 'Touch') {
           this.touchEnd(event);

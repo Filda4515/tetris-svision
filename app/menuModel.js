@@ -6,6 +6,7 @@ const { MenuEntity } = await import('./svision/js/platform/canvas2D/menuEntity.j
 const { TextEntity } = await import('./svision/js/platform/canvas2D/textEntity.js?ver=' + window.srcVersion);
 const { ZXColor } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxColor.js?ver=' + window.srcVersion);
 const { ZXPlayerNameEntity } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxPlayerNameEntity.js?ver=' + window.srcVersion);
+const { ZXSettingsEntity } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxSettingsEntity.js?ver=' + window.srcVersion);
 const { ZXWaitForAudioEventEntity } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxWaitForAudioEventEntity.js?ver=' + window.srcVersion);
 /*/
 import AbstractEntity from './svision/js/abstractEntity.js';
@@ -15,6 +16,7 @@ import MenuEntity from './svision/js/platform/canvas2D/menuEntity.js';
 import TextEntity from './svision/js/platform/canvas2D/textEntity.js';
 import ZXColor from './svision/js/platform/canvas2D/zxSpectrum/zxColor.js';
 import ZXPlayerNameEntity from './svision/js/platform/canvas2D/zxSpectrum/zxPlayerNameEntity.js';
+import ZXSettingsEntity from './svision/js/platform/canvas2D/zxSpectrum/zxSettingsEntity.js';
 import ZXWaitForAudioEventEntity from './svision/js/platform/canvas2D/zxSpectrum/zxWaitForAudioEventEntity.js';
 /**/
 // begin code
@@ -28,6 +30,7 @@ export class MenuModel extends AbstractModel {
       { t1: 'START GAME', event: { id: 'startGame' } },
       { t1: 'PLAYER NAME', event: { id: 'setPlayerName' } },
       { t1: 'HALL OF FAME', event: { id: 'showHallOfFame' } },
+      { t1: 'SETTINGS', event: { id: 'setSettings' } },
     ];
 
     this.menuOptions = {
@@ -119,6 +122,9 @@ export class MenuModel extends AbstractModel {
         return true;
       case 'showHallOfFame':
         this.desktopEntity.addModalEntity(new HallOfFameEntity(this.desktopEntity, 27, 24, 202, 134));
+        return true;
+      case 'setSettings':
+        this.desktopEntity.addModalEntity(new ZXSettingsEntity(this.desktopEntity, 27, 24, 202, 134, this.app.controlsOptions));
         return true;
     }
     return false;
