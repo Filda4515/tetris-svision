@@ -302,8 +302,8 @@ export class TetrisModel extends AbstractModel {
       this.desktopEntity.modalEntity = null;
     }
 
-    const boxWidth = 140;
-    const boxHeight = 80;
+    const boxWidth = 144;
+    const boxHeight = 104;
     const boxX = Math.floor((this.desktopWidth - boxWidth) / 2);
     const boxY = Math.floor((this.desktopHeight - boxHeight) / 2);
     this.desktopEntity.addModalEntity(new TetrisGameOverEntity(this.desktopEntity, boxX, boxY, boxWidth, boxHeight));

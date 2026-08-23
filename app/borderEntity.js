@@ -131,7 +131,7 @@ export class BorderEntity extends AbstractEntity {
         }
         break;
     }
-    
+
     return false;
   } // handleEvent
 } // BorderEntity

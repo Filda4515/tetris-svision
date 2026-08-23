@@ -2,7 +2,7 @@
 const { AbstractApp } = await import('./svision/js/abstractApp.js?ver=' + window.srcVersion);
 const { Fonts3x3 } = await import('./svision/js/platform/canvas2D/fonts3x3.js?ver=' + window.srcVersion);
 const { Fonts5x5 } = await import('./svision/js/platform/canvas2D/fonts5x5.js?ver=' + window.srcVersion);
-const { MainModel } = await import('./mainModel.js?ver='+window.srcVersion);
+const { MainModel } = await import('./mainModel.js?ver=' + window.srcVersion);
 const { MenuModel } = await import('./menuModel.js?ver=' + window.srcVersion);
 const { TetrisModel } = await import('./tetrisModel.js?ver=' + window.srcVersion);
 const { Tool } = await import('./svision/js/tool.js?ver=' + window.srcVersion);

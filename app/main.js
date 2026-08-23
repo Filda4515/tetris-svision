@@ -40,9 +40,9 @@ if (window.matchMedia('(pointer: coarse)').matches) {
 }
 
 // disable gesture on Safari mobile
-document.addEventListener("gesturestart", (event) => event.preventDefault());
-document.addEventListener("gestureend", (event) => event.preventDefault());
-document.addEventListener("gesturechange", (event) => event.preventDefault());
+document.addEventListener('gesturestart', (event) => event.preventDefault());
+document.addEventListener('gestureend', (event) => event.preventDefault());
+document.addEventListener('gesturechange', (event) => event.preventDefault());
 
 // start game
 gameApp.eventResizeWindow(null);
