@@ -7,7 +7,10 @@ const { TextEntity } = await import('./svision/js/platform/canvas2D/textEntity.j
 const { ZXColor } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxColor.js?ver=' + window.srcVersion);
 const { ZXPlayerNameEntity } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxPlayerNameEntity.js?ver=' + window.srcVersion);
 const { ZXSettingsEntity } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxSettingsEntity.js?ver=' + window.srcVersion);
-const { ZXWaitForAudioEventEntity } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxWaitForAudioEventEntity.js?ver=' + window.srcVersion);
+const { ZXVolumeEntity } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxVolumeEntity.js?ver=' + window.srcVersion);
+const { ZXWaitForAudioEventEntity } = await import(
+  './svision/js/platform/canvas2D/zxSpectrum/zxWaitForAudioEventEntity.js?ver=' + window.srcVersion
+);
 /*/
 import AbstractEntity from './svision/js/abstractEntity.js';
 import AbstractModel from './svision/js/abstractModel.js';
@@ -17,6 +20,7 @@ import TextEntity from './svision/js/platform/canvas2D/textEntity.js';
 import ZXColor from './svision/js/platform/canvas2D/zxSpectrum/zxColor.js';
 import ZXPlayerNameEntity from './svision/js/platform/canvas2D/zxSpectrum/zxPlayerNameEntity.js';
 import ZXSettingsEntity from './svision/js/platform/canvas2D/zxSpectrum/zxSettingsEntity.js';
+import ZXVolumeEntity from './svision/js/platform/canvas2D/zxSpectrum/zxVolumeEntity.js';
 import ZXWaitForAudioEventEntity from './svision/js/platform/canvas2D/zxSpectrum/zxWaitForAudioEventEntity.js';
 /**/
 // begin code
@@ -30,6 +34,8 @@ export class MenuModel extends AbstractModel {
       { t1: 'START GAME', event: { id: 'startGame' } },
       { t1: 'PLAYER NAME', event: { id: 'setPlayerName' } },
       { t1: 'HALL OF FAME', event: { id: 'showHallOfFame' } },
+      { t1: 'SOUNDS', event: { id: 'setSounds' } },
+      { t1: 'MUSIC', event: { id: 'setMusic' } },
       { t1: 'SETTINGS', event: { id: 'setSettings' } },
     ];
 
@@ -88,9 +94,18 @@ export class MenuModel extends AbstractModel {
     if (key === 'numberOfItems') {
       return self.menuItems.length;
     }
-    if (key === 't2' && row === 1) {
-      return self.app.playerName;
+
+    if (key === 't2') {
+      if (row === 1) {
+        return self.app.playerName;
+      }
+      const vol = row === 3 ? self.app.audioManager.volume.sounds : row === 4 ? self.app.audioManager.volume.music : null;
+
+      if (vol !== null) {
+        return vol === 0 ? 'OFF' : vol === 10 ? 'MAX' : vol * 10 + '%';
+      }
     }
+
     if (key in self.menuItems[row]) {
       return self.menuItems[row][key];
     }
@@ -122,6 +137,16 @@ export class MenuModel extends AbstractModel {
         return true;
       case 'showHallOfFame':
         this.desktopEntity.addModalEntity(new HallOfFameEntity(this.desktopEntity, 27, 24, 202, 134));
+        return true;
+      case 'setSounds':
+        this.desktopEntity.addModalEntity(
+          new ZXVolumeEntity(this.desktopEntity, 27, 24, 202, 134, 'sounds', 'audioBusSoundsLevel', 'exampleJumpSound'),
+        );
+        return true;
+      case 'setMusic':
+        this.desktopEntity.addModalEntity(
+          new ZXVolumeEntity(this.desktopEntity, 27, 24, 202, 134, 'music', 'audioBusMusicLevel', 'exampleInGameMelody'),
+        );
         return true;
       case 'setSettings':
         this.desktopEntity.addModalEntity(new ZXSettingsEntity(this.desktopEntity, 27, 24, 202, 134, this.app.controlsOptions));

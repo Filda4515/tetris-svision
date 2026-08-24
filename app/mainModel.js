@@ -28,7 +28,16 @@ export class MainModel extends AbstractModel {
 
     this.titleEntity = new TetrisTitleEntity(this.desktopEntity, 0, 0, this.desktopWidth, this.desktopHeight);
     this.desktopEntity.addEntity(this.titleEntity);
+
+    this.sendEvent(0, { id: 'openAudioBus', bus: 'music', options: { muted: this.app.muted.music } });
+    this.sendEvent(0, { id: 'openAudioBus', bus: 'sounds', options: { muted: this.app.muted.sounds } });
+    this.sendEvent(0, { id: 'playSound', bus: 'music', sound: 'titleScreenMelody', options: false });
   } // init
+
+  shutdown() {
+    super.shutdown();
+    this.sendEvent(0, { id: 'stopAllAudioBuses' });
+  } // shutdown
 
   newBorderEntity() {
     return new BorderEntity(true, false);

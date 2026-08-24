@@ -1,5 +1,6 @@
 /**/
 const { AbstractApp } = await import('./svision/js/abstractApp.js?ver=' + window.srcVersion);
+const { AudioManager } = await import('./audioManager.js?ver=' + window.srcVersion);
 const { Fonts3x3 } = await import('./svision/js/platform/canvas2D/fonts3x3.js?ver=' + window.srcVersion);
 const { Fonts5x5 } = await import('./svision/js/platform/canvas2D/fonts5x5.js?ver=' + window.srcVersion);
 const { MainModel } = await import('./mainModel.js?ver=' + window.srcVersion);
@@ -11,6 +12,7 @@ const { ZXFonts8x8 } = await import('./svision/js/platform/canvas2D/zxSpectrum/z
 const { ZXResetModel } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxResetModel.js?ver=' + window.srcVersion);
 /*/
 import AbstractApp from './svision/js/abstractApp.js';
+import AudioManager from './audioManager.js';
 import Fonts3x3 from './svision/js/platform/canvas2D/fonts3x3.js';
 import Fonts5x5 from './svision/js/platform/canvas2D/fonts5x5.js';
 import MainModel from './mainModel.js';
@@ -31,6 +33,9 @@ export class GameApp extends AbstractApp {
     this.copyright = '©␣2026␣Filip␣Nevrala, CC␣BY⋅NC⋅SA';
     this.devModeName = devModeName;
     this.appIconSprite = appIconSprite;
+
+    this.audioManager = new AudioManager(this);
+    this.muted = { sounds: false, music: false };
 
     this.fonts = {
       zxFonts8x8Mono: new ZXFonts8x8(this, false),
@@ -154,7 +159,8 @@ export class GameApp extends AbstractApp {
     this.score = 0;
     this.playerName = Tool.readCookie('playerName', '');
     this.id = 'GameApp';
-    this.setModel('LoadingModel');
+    // this.setModel('LoadingModel');
+    this.setModel('MenuModel');
     // this.setModel('TetrisModel');
   } // constructor
 

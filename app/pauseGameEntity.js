@@ -20,6 +20,8 @@ export class PauseGameEntity extends AbstractEntity {
     this.exitModel = exitModel;
     this.menuItems = [
       { t1: 'RESUME GAME', event: { id: 'closePauseGame' } },
+      { t1: 'SOUNDS', event: { id: 'changeSoundsState' } },
+      { t1: 'MUSIC', event: { id: 'changeMusicState' } },
       { t1: 'EXIT GAME', event: { id: 'exitGame' } },
     ];
     this.menuOptions = {
@@ -59,6 +61,14 @@ export class PauseGameEntity extends AbstractEntity {
     switch (key) {
       case 'numberOfItems':
         return self.menuItems.length;
+      case 't2':
+        switch (row) {
+          case 1:
+            return self.app.muted.sounds ? 'MUTE' : 'ON';
+          case 2:
+            return self.app.muted.music ? 'MUTE' : 'ON';
+        }
+        break;
       default:
         if (key in self.menuItems[row]) {
           return self.menuItems[row][key];
@@ -85,6 +95,16 @@ export class PauseGameEntity extends AbstractEntity {
       case 'closePauseGame':
         this.sendEvent(-1, 1, { id: 'continueGame' });
         this.destroy();
+        return true;
+      case 'changeSoundsState':
+        this.app.muted.sounds = !this.app.muted.sounds;
+        this.sendEvent(0, 0, { id: 'muteAudioBus', bus: 'sounds', muted: this.app.muted.sounds });
+        this.sendEvent(1, 0, { id: 'refreshMenu' });
+        return true;
+      case 'changeMusicState':
+        this.app.muted.music = !this.app.muted.music;
+        this.sendEvent(0, 0, { id: 'muteAudioBus', bus: 'music', muted: this.app.muted.music });
+        this.sendEvent(1, 0, { id: 'refreshMenu' });
         return true;
       case 'exitGame':
         this.app.setModel(this.exitModel);

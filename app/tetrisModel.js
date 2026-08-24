@@ -297,6 +297,8 @@ export class TetrisModel extends AbstractModel {
     this.app.score = this.score;
     this.app.gameOverTarget = targetModel;
 
+    this.sendEvent(0, { id: 'playSound', bus: 'music', sound: 'gameOverMelody', options: false });
+
     if (this.desktopEntity.modalEntity) {
       this.desktopEntity.modalEntity.shutdown();
       this.desktopEntity.modalEntity = null;
@@ -419,6 +421,8 @@ export class TetrisModel extends AbstractModel {
       clearTimeout(this.gameOverTimeout);
       this.gameOverTimeout = null;
     }
+
+    this.sendEvent(0, { id: 'stopAllAudioBuses' });
   } // shutdown
 } // TetrisModel
 
