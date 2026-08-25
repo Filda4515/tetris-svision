@@ -10,7 +10,7 @@ import AbstractModel from './svision/js/abstractModel.js';
 import BorderEntity from './borderEntity.js';
 import LevelSelectEntity from './levelSelectEntity.js';
 import MenuTransitionEntity from './menuTransitionEntity.js';
-import TetrisTitleEntity from './tetrisTitleEntity.js';
+import TetrisConstants from './tetrisConstants.js';
 import ZXColor from './svision/js/platform/canvas2D/zxSpectrum/zxColor.js';
 /**/
 // begin code
@@ -49,21 +49,34 @@ export class LevelSelectModel extends AbstractModel {
     }
 
     let level = null;
+    let displayChar = null;
 
     if (event.id === 'keyPress') {
       const key = event.key;
-      if (key >= '0' && key <= '9') {
-        level = parseInt(key, 10);
-      } else {
+
+      if (key === 'Enter' || key === 'GamepadOK') {
         level = 5;
+        displayChar = '';
+      } else if (key === ' ') {
+        level = 5;
+        displayChar = ' ';
+      } else if (key.length === 1) {
+        displayChar = key.toUpperCase();
+
+        if (key >= '0' && key <= '9') {
+          level = parseInt(key, 10);
+        } else {
+          level = 5;
+        }
       }
     } else if (event.id === 'keyRelease' && (event.key === 'Mouse1' || event.key === 'Touch')) {
       level = 5;
+      displayChar = '';
     }
 
-    if (level !== null) {
+    if (level !== null && displayChar !== null) {
       this.app.startLevel = level;
-      this.selectEntity.selectedLevel = level;
+      this.selectEntity.selectedLevel = displayChar;
 
       this.sendEvent(0, { id: 'playSound', bus: 'sounds', sound: 'dropSound', options: false });
       return true;

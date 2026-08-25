@@ -18,7 +18,6 @@ export class LevelSelectEntity extends AbstractEntity {
     this.selectedLevel = null;
 
     this.textEntity = null;
-    this.cursorEntity = null;
     this.lastText = '';
   } // constructor
 
@@ -32,34 +31,20 @@ export class LevelSelectEntity extends AbstractEntity {
 
     this.textEntity = new TextEntity(this, font, 0, textY, this.width, charSize, '', ZXColor.brightWhite, false, { align: 'center' });
     this.addEntity(this.textEntity);
-
-    this.cursorEntity = new TextEntity(this, font, 0, textY, charSize, charSize, '█', ZXColor.brightWhite, false, { align: 'left' });
-    this.addEntity(this.cursorEntity);
   } // init
 
   drawEntity(ctx, timestamp) {
     let currentText = 'HOW GOOD ARE YOU (0-9)  [5]  ?';
 
     if (this.selectedLevel !== null) {
-      currentText += ' ' + this.selectedLevel;
+      currentText += this.selectedLevel;
     }
+    currentText += '➡';
 
     if (currentText !== this.lastText) {
       this.textEntity.text = currentText;
       this.textEntity.cleanCache();
       this.lastText = currentText;
-
-      const charSize = TetrisConstants.UI.FONT_SIZE;
-      const textWidth = currentText.length * charSize;
-
-      const textStartX = Math.floor((this.width - textWidth) / 2);
-      this.cursorEntity.x = textStartX + textWidth + charSize;
-    }
-
-    if (this.selectedLevel !== null) {
-      this.cursorEntity.hide = true;
-    } else {
-      this.cursorEntity.hide = Math.floor(timestamp / 400) % 2 !== 0;
     }
 
     super.drawSubEntities(ctx, timestamp);

@@ -50,7 +50,7 @@ export class GameApp extends AbstractApp {
     this.fonts.zxFonts8x8Mono.addGlyphs('Σ', 'FE4020102040FE00');
 
     this.fonts.zxFonts8x8.addGlyphs('‗⋅', '000000000000F8F80000000030000000');
-    this.fonts.zxFonts8x8.addGlyphs('█', 'FFFFFFFFFFFFFFFF');
+    this.fonts.zxFonts8x8.addGlyphs('➡', '00080CFEFE0C0800');
     this.fonts.zxFonts8x8.addSpace('␣', { width: 3, breaking: false, stretch: false });
 
     this.fonts.zxFonts8x8Keys.setFontsData(
