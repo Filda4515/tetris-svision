@@ -159,8 +159,7 @@ export class GameApp extends AbstractApp {
     this.score = 0;
     this.playerName = Tool.readCookie('playerName', '');
     this.id = 'GameApp';
-    // this.setModel('LoadingModel');
-    this.setModel('MenuModel');
+    this.setModel('LoadingModel');
     // this.setModel('TetrisModel');
   } // constructor
 

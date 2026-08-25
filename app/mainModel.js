@@ -49,6 +49,9 @@ export class MainModel extends AbstractModel {
     }
 
     switch (event.id) {
+      case 'replayTitleMusic':
+        this.sendEvent(0, { id: 'playSound', bus: 'music', sound: 'titleScreenMelody', options: false });
+        return true;
       case 'keyPress':
         if (this.desktopEntity.modalEntity == null) {
           var key = event.key;
@@ -75,6 +78,7 @@ export class MainModel extends AbstractModel {
               return true;
           }
         }
+        break;
       case 'keyRelease':
         if (this.desktopEntity.modalEntity == null) {
           switch (event.key) {

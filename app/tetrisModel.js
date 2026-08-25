@@ -227,6 +227,7 @@ export class TetrisModel extends AbstractModel {
         }
       }
     }
+    this.sendEvent(0, { id: 'playSound', bus: 'sounds', sound: 'dropSound', options: false });
     piece.destroy();
 
     if (this.boardEntity.drawingCache?.[0]?.cleanCache) {
