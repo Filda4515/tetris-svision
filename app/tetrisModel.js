@@ -1,6 +1,7 @@
 /**/
 const { AbstractModel } = await import('./svision/js/abstractModel.js?ver=' + window.srcVersion);
 const { BorderEntity } = await import('./borderEntity.js?ver=' + window.srcVersion);
+const { MenuTransitionEntity } = await import('./menuTransitionEntity.js?ver=' + window.srcVersion);
 const { PauseGameEntity } = await import('./pauseGameEntity.js?ver=' + window.srcVersion);
 const { TetrisBoardEntity } = await import('./tetrisBoardEntity.js?ver=' + window.srcVersion);
 const { TetrisConstants, TETROMINOES_DATA } = await import('./tetrisConstants.js?ver=' + window.srcVersion);
@@ -13,6 +14,7 @@ const { ZXColor } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxCo
 /*/
 import AbstractModel from './svision/js/abstractModel.js';
 import BorderEntity from './borderEntity.js';
+import MenuTransitionEntity from './menuTransitionEntity.js';
 import PauseGameEntity from './pauseGameEntity.js';
 import TetrisBoardEntity from './tetrisBoardEntity.js';
 import TetrisConstants, { TETROMINOES_DATA } from './tetrisConstants.js';
@@ -312,9 +314,7 @@ export class TetrisModel extends AbstractModel {
     const boxY = Math.floor((this.desktopHeight - boxHeight) / 2);
     this.desktopEntity.addModalEntity(new TetrisGameOverEntity(this.desktopEntity, boxX, boxY, boxWidth, boxHeight));
 
-    this.gameOverTimeout = setTimeout(() => {
-      this.app.setModel(this.app.gameOverTarget);
-    }, 3000);
+    this.sendEvent(2000, { id: 'startGameOverTransition' });
   } // showGameOver
 
   handleEvent(event) {
@@ -322,7 +322,21 @@ export class TetrisModel extends AbstractModel {
       return true;
     }
 
-    if (this.gameOver) return false;
+    if (event.id === 'startGameOverTransition') {
+      this.desktopEntity.addEntity(new MenuTransitionEntity(this.desktopEntity, 0, 0, this.desktopWidth, this.desktopHeight));
+      this.sendEvent(TetrisConstants.TRANSITION.TOTAL_DURATION_MS, { id: 'finishGameOverTransition' });
+      return true;
+    }
+
+    if (event.id === 'finishGameOverTransition') {
+      this.app.setModel(this.app.gameOverTarget);
+      return true;
+    }
+
+    if (this.gameOver) {
+      if (event.id === 'keyPress' || event.id === 'keyRelease') return true;
+      return false;
+    }
 
     switch (event.id) {
       case 'keyPress':
@@ -418,11 +432,6 @@ export class TetrisModel extends AbstractModel {
 
   shutdown() {
     super.shutdown();
-
-    if (this.gameOverTimeout) {
-      clearTimeout(this.gameOverTimeout);
-      this.gameOverTimeout = null;
-    }
 
     this.sendEvent(0, { id: 'stopAllAudioBuses' });
   } // shutdown

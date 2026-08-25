@@ -67,19 +67,8 @@ export class TetrisGameOverEntity extends AbstractEntity {
       return true;
     }
 
-    switch (event.id) {
-      case 'keyPress':
-        if (['Enter', 'Escape', 'GamepadOK', 'GamepadExit'].includes(event.key)) {
-          this.app.setModel(this.app.gameOverTarget);
-          return true;
-        }
-        break;
-      case 'keyRelease':
-        if (['Mouse1', 'Touch'].includes(event.key)) {
-          this.app.setModel(this.app.gameOverTarget);
-          return true;
-        }
-        break;
+    if (event.id === 'keyPress' || event.id === 'keyRelease') {
+      return true;
     }
 
     return false;

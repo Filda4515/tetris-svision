@@ -63,6 +63,11 @@ export const TetrisConstants = {
     // [L (White), I (Yellow), T (Cyan), Z (Green), S (Magenta), O (Red), J (Blue)]
     STATS_ORDER: [6, 0, 2, 4, 3, 1, 5],
   },
+
+  TRANSITION: {
+    COLOR_DURATION_MS: 500,
+    TOTAL_DURATION_MS: 2100, // 4 * 500 + 100
+  },
 };
 
 export const TETROMINOES_DATA = [

@@ -2,11 +2,15 @@
 const { AbstractModel } = await import('./svision/js/abstractModel.js?ver=' + window.srcVersion);
 const { BorderEntity } = await import('./borderEntity.js?ver=' + window.srcVersion);
 const { LevelSelectEntity } = await import('./levelSelectEntity.js?ver=' + window.srcVersion);
+const { MenuTransitionEntity } = await import('./menuTransitionEntity.js?ver=' + window.srcVersion);
+const { TetrisConstants } = await import('./tetrisConstants.js?ver=' + window.srcVersion);
 const { ZXColor } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxColor.js?ver=' + window.srcVersion);
 /*/
 import AbstractModel from './svision/js/abstractModel.js';
 import BorderEntity from './borderEntity.js';
 import LevelSelectEntity from './levelSelectEntity.js';
+import MenuTransitionEntity from './menuTransitionEntity.js';
+import TetrisTitleEntity from './tetrisTitleEntity.js';
 import ZXColor from './svision/js/platform/canvas2D/zxSpectrum/zxColor.js';
 /**/
 // begin code
@@ -41,7 +45,7 @@ export class LevelSelectModel extends AbstractModel {
     }
 
     if (this.selectEntity.selectedLevel !== null) {
-      return false;
+      return true;
     }
 
     let level = null;
@@ -73,7 +77,8 @@ export class LevelSelectModel extends AbstractModel {
 
     if (this.selectEntity.selectedLevel !== null) {
       if (this.transitionTime === 0) {
-        this.transitionTime = timestamp + 500;
+        this.desktopEntity.addEntity(new MenuTransitionEntity(this.desktopEntity, 0, 0, this.desktopWidth, this.desktopHeight));
+        this.transitionTime = timestamp + TetrisConstants.TRANSITION.TOTAL_DURATION_MS;
       } else if (timestamp > this.transitionTime) {
         this.app.score = 0;
         this.app.setModel('TetrisModel');

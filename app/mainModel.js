@@ -1,13 +1,17 @@
 /**/
 const { AbstractModel } = await import('./svision/js/abstractModel.js?ver=' + window.srcVersion);
 const { BorderEntity } = await import('./borderEntity.js?ver=' + window.srcVersion);
+const { MenuTransitionEntity } = await import('./menuTransitionEntity.js?ver=' + window.srcVersion);
 const { PauseGameEntity } = await import('./pauseGameEntity.js?ver=' + window.srcVersion);
+const { TetrisConstants } = await import('./tetrisConstants.js?ver=' + window.srcVersion);
 const { TetrisTitleEntity } = await import('./tetrisTitleEntity.js?ver=' + window.srcVersion);
 const { ZXColor } = await import('./svision/js/platform/canvas2D/zxSpectrum/zxColor.js?ver=' + window.srcVersion);
 /*/
 import AbstractModel from './svision/js/abstractModel.js';
 import BorderEntity from './borderEntity.js';
+import MenuTransitionEntity from './menuTransitionEntity.js';
 import PauseGameEntity from './pauseGameEntity.js';
+import TetrisConstants from './tetrisConstants.js';
 import TetrisTitleEntity from './tetrisTitleEntity.js';
 import ZXColor from './svision/js/platform/canvas2D/zxSpectrum/zxColor.js';
 /**/
@@ -43,12 +47,32 @@ export class MainModel extends AbstractModel {
     return new BorderEntity(true, false);
   } // newBorderEntity
 
+  startTransition() {
+    if (this.isTransitioning) return;
+
+    this.isTransitioning = true;
+    this.app.score = 0;
+
+    this.sendEvent(0, { id: 'stopAllAudioBuses' });
+
+    this.desktopEntity.addEntity(new MenuTransitionEntity(this.desktopEntity, 0, 0, this.desktopWidth, this.desktopHeight));
+
+    this.sendEvent(TetrisConstants.TRANSITION.TOTAL_DURATION_MS, { id: 'finishTransition' });
+  } // startTransition
+
   handleEvent(event) {
     if (super.handleEvent(event)) {
       return true;
     }
 
+    if (this.isTransitioning && (event.id === 'keyPress' || event.id === 'keyRelease')) {
+      return true;
+    }
+
     switch (event.id) {
+      case 'finishTransition':
+        this.app.setModel('LevelSelectModel');
+        return true;
       case 'replayTitleMusic':
         this.sendEvent(0, { id: 'playSound', bus: 'music', sound: 'titleScreenMelody', options: false });
         return true;
@@ -64,7 +88,7 @@ export class MainModel extends AbstractModel {
             case 'Enter':
             case 'GamepadOK':
               this.app.score = 0;
-              this.app.setModel('LevelSelectModel');
+              this.startTransition();
               return true;
             case 'Escape':
             case 'GamepadExit':
@@ -85,14 +109,14 @@ export class MainModel extends AbstractModel {
             case 'Mouse1':
               if (this.app.inputEventsManager.keysMap.Mouse1 === this.borderEntity) {
                 this.app.score = 0;
-                this.app.setModel('LevelSelectModel');
+                this.startTransition();
                 return true;
               }
               break;
             case 'Touch':
               if (this.app.inputEventsManager.touchesMap[event.identifier] === this.borderEntity) {
                 this.app.score = 0;
-                this.app.setModel('LevelSelectModel');
+                this.startTransition();
                 return true;
               }
               break;
