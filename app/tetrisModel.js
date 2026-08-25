@@ -142,12 +142,13 @@ export class TetrisModel extends AbstractModel {
       currentMatrix: initialMatrix,
     };
 
+    this.boardEntity.addEntity(tetEntity);
+
     if (!this.canMove(testPiece, 0, 0)) {
       this.showGameOver('MainModel');
       return;
     }
 
-    this.boardEntity.addEntity(tetEntity);
     this.activePiece = tetEntity;
   } // spawnNextPiece
 
