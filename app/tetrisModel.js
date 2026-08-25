@@ -50,7 +50,7 @@ export class TetrisModel extends AbstractModel {
 
     this.score = 0;
     this.lines = 0;
-    this.level = 0;
+    this.level = this.app.startLevel;
     this.statsCount = [0, 0, 0, 0, 0, 0, 0];
     this.statsSum = 0;
 
@@ -91,6 +91,7 @@ export class TetrisModel extends AbstractModel {
 
     this.infoEntity = new TetrisInfoEntity(this.desktopEntity, lmX, lmY, lmW, lmH);
     this.desktopEntity.addEntity(this.infoEntity);
+    this.infoEntity.updateLevel(this.level);
 
     this.rightMenuEntity = new TetrisRightMenuEntity(this.desktopEntity, rmX, rmY, rmW, rmH);
     this.desktopEntity.addEntity(this.rightMenuEntity);
@@ -245,7 +246,7 @@ export class TetrisModel extends AbstractModel {
       this.lines = 110 + overflow;
     }
 
-    this.level = Math.floor(this.lines / 20);
+    this.level = this.app.startLevel + Math.floor(this.lines / 20);
 
     if (this.level > 9) {
       this.level = 9;

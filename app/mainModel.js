@@ -64,7 +64,7 @@ export class MainModel extends AbstractModel {
             case 'Enter':
             case 'GamepadOK':
               this.app.score = 0;
-              this.app.setModel('TetrisModel');
+              this.app.setModel('LevelSelectModel');
               return true;
             case 'Escape':
             case 'GamepadExit':
@@ -85,14 +85,14 @@ export class MainModel extends AbstractModel {
             case 'Mouse1':
               if (this.app.inputEventsManager.keysMap.Mouse1 === this.borderEntity) {
                 this.app.score = 0;
-                this.app.setModel('TetrisModel');
+                this.app.setModel('LevelSelectModel');
                 return true;
               }
               break;
             case 'Touch':
               if (this.app.inputEventsManager.touchesMap[event.identifier] === this.borderEntity) {
                 this.app.score = 0;
-                this.app.setModel('TetrisModel');
+                this.app.setModel('LevelSelectModel');
                 return true;
               }
               break;

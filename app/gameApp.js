@@ -3,6 +3,7 @@ const { AbstractApp } = await import('./svision/js/abstractApp.js?ver=' + window
 const { AudioManager } = await import('./audioManager.js?ver=' + window.srcVersion);
 const { Fonts3x3 } = await import('./svision/js/platform/canvas2D/fonts3x3.js?ver=' + window.srcVersion);
 const { Fonts5x5 } = await import('./svision/js/platform/canvas2D/fonts5x5.js?ver=' + window.srcVersion);
+const { LevelSelectModel } = await import('./levelSelectModel.js?ver=' + window.srcVersion);
 const { MainModel } = await import('./mainModel.js?ver=' + window.srcVersion);
 const { MenuModel } = await import('./menuModel.js?ver=' + window.srcVersion);
 const { TetrisModel } = await import('./tetrisModel.js?ver=' + window.srcVersion);
@@ -15,6 +16,7 @@ import AbstractApp from './svision/js/abstractApp.js';
 import AudioManager from './audioManager.js';
 import Fonts3x3 from './svision/js/platform/canvas2D/fonts3x3.js';
 import Fonts5x5 from './svision/js/platform/canvas2D/fonts5x5.js';
+import LevelSelectModel from './levelSelectModel.js';
 import MainModel from './mainModel.js';
 import MenuModel from './menuModel.js';
 import TetrisModel from './tetrisModel.js';
@@ -48,6 +50,7 @@ export class GameApp extends AbstractApp {
     this.fonts.zxFonts8x8Mono.addGlyphs('Σ', 'FE4020102040FE00');
 
     this.fonts.zxFonts8x8.addGlyphs('‗⋅', '000000000000F8F80000000030000000');
+    this.fonts.zxFonts8x8.addGlyphs('█', 'FFFFFFFFFFFFFFFF');
     this.fonts.zxFonts8x8.addSpace('␣', { width: 3, breaking: false, stretch: false });
 
     this.fonts.zxFonts8x8Keys.setFontsData(
@@ -157,6 +160,7 @@ export class GameApp extends AbstractApp {
     };
 
     this.score = 0;
+    this.startLevel = 0;
     this.playerName = Tool.readCookie('playerName', '');
     this.id = 'GameApp';
     this.setModel('LoadingModel');
@@ -239,6 +243,9 @@ export class GameApp extends AbstractApp {
         break;
       case 'MainModel':
         this.model = new MainModel(this);
+        break;
+      case 'LevelSelectModel':
+        this.model = new LevelSelectModel(this);
         break;
       case 'TetrisModel':
         this.model = new TetrisModel(this);
