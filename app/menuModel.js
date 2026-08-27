@@ -1,6 +1,7 @@
 /**/
 const { AbstractEntity } = await import('./svision/js/abstractEntity.js?ver=' + window.srcVersion);
 const { AbstractModel } = await import('./svision/js/abstractModel.js?ver=' + window.srcVersion);
+const { ButtonEntity } = await import('./svision/js/platform/canvas2D/buttonEntity.js?ver='+window.srcVersion);
 const { HallOfFameEntity } = await import('./hallOfFameEntity.js?ver=' + window.srcVersion);
 const { MenuEntity } = await import('./svision/js/platform/canvas2D/menuEntity.js?ver=' + window.srcVersion);
 const { TextEntity } = await import('./svision/js/platform/canvas2D/textEntity.js?ver=' + window.srcVersion);
@@ -14,6 +15,7 @@ const { ZXWaitForAudioEventEntity } = await import(
 /*/
 import AbstractEntity from './svision/js/abstractEntity.js';
 import AbstractModel from './svision/js/abstractModel.js';
+import ButtonEntity from './svision/js/platform/canvas2D/buttonEntity.js';
 import HallOfFameEntity from './hallOfFameEntity.js';
 import MenuEntity from './svision/js/platform/canvas2D/menuEntity.js';
 import TextEntity from './svision/js/platform/canvas2D/textEntity.js';
@@ -59,6 +61,9 @@ export class MenuModel extends AbstractModel {
       selectionClickColor: '#0a2277ff',
       selection: selectionItem || 0,
     };
+
+    this.versionEntity = null;
+    this.newVersionAvailable = false;
   } // constructor
 
   init() {
@@ -71,6 +76,12 @@ export class MenuModel extends AbstractModel {
     this.desktopEntity.addEntity(
       new MenuEntity(this.desktopEntity, 14, 14, 228, 139, this.desktopEntity.bkColor, this.menuOptions, this, this.getMenuData),
     );
+
+    this.versionEntity = new ButtonEntity(this.desktopEntity, this.app.fonts.fonts5x5, 180, 151, 55, 5, 'Ⓥ'+this.app.version, {id: 'upgradeApp'}, [], ZXColor.blue, ZXColor.white, {align: 'center'});
+    this.desktopEntity.addEntity(this.versionEntity);
+    this.versionEntity.hoverColor = false;
+    this.versionEntity.clickColor = false;
+    this.checkServerVersion();
 
     this.copyrightEntity = new TextEntity(
       this.desktopEntity,
@@ -89,6 +100,22 @@ export class MenuModel extends AbstractModel {
     this.app.stack.flashState = false;
     this.sendEvent(330, { id: 'changeFlashState' });
   } // init
+
+  checkServerVersion() {
+    var receiver = {
+      id: this.id+'Version',
+      fetchDataId: '',
+      setData: (data) => {
+        if (data.data.version && data.data.version !== 'unknown' && data.data.version !== this.app.version) {
+          this.newVersionAvailable = true;
+          this.versionEntity.setText('UPGRADE !');
+          this.versionEntity.setPenColor(ZXColor.brightRed);
+        }
+      },
+      errorData: () => {}
+    };
+    receiver.fetchDataId = this.app.fetchData('version.db', false, {}, receiver);
+  } // checkServerVersion
 
   getMenuData(self, key, row) {
     if (key === 'numberOfItems') {
@@ -150,6 +177,11 @@ export class MenuModel extends AbstractModel {
         return true;
       case 'setSettings':
         this.desktopEntity.addModalEntity(new ZXSettingsEntity(this.desktopEntity, 27, 24, 202, 134, this.app.controlsOptions));
+        return true;
+      case 'upgradeApp':
+        if (this.newVersionAvailable) {
+          this.app.upgradeApp();
+        }
         return true;
     }
     return false;

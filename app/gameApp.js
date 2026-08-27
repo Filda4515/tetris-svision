@@ -58,6 +58,16 @@ export class GameApp extends AbstractApp {
     );
 
     this.fonts.fonts5x5.addGlyphs({
+      'Ⓥ': {
+        width: 3,
+        data: [
+          [0, 2, 1, 1],
+          [0, 3, 1, 1],
+          [1, 4, 1, 1],
+          [2, 3, 1, 1],
+          [2, 2, 1, 1],
+        ],
+      },
       '←': {
         width: 6,
         data: [
@@ -82,7 +92,7 @@ export class GameApp extends AbstractApp {
           [0, 2, 5, 1],
         ],
       },
-      '➔': {
+      '→': {
         width: 6,
         data: [
           [0, 2, 6, 1],
