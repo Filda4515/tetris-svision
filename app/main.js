@@ -44,6 +44,37 @@ document.addEventListener('gesturestart', (event) => event.preventDefault());
 document.addEventListener('gestureend', (event) => event.preventDefault());
 document.addEventListener('gesturechange', (event) => event.preventDefault());
 
+history.replaceState({backGuard: 'base'}, "", location.href);
+const armBackGuard = () => {
+  if (!history.state || history.state.backGuard !== 'sentinel') {
+    history.pushState({backGuard: 'sentinel'}, "", location.href);
+  }
+};
+window.addEventListener('pointerdown', armBackGuard);
+window.addEventListener('keydown', armBackGuard);
+window.addEventListener('touchstart', armBackGuard);
+let leavingApp = false;
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) {
+    leavingApp = false;
+  }
+});
+window.addEventListener("popstate", (event) => {
+  if (leavingApp) {
+    history.back();
+    return;
+  }
+  if (event.state && event.state.backGuard === 'sentinel') {
+    return;
+  }
+  if (window.confirm('Do you really want to leave the game?')) {
+    leavingApp = true;
+    history.back();
+  } else {
+    history.pushState({backGuard: 'sentinel'}, "", location.href);
+  }
+});
+
 // start game
 gameApp.eventResizeWindow(null);
 requestAnimationFrame(loopGame);
