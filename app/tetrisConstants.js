@@ -17,9 +17,10 @@ export const TetrisConstants = {
   TOP_BEVEL_OFFSET: 4,
 
   UI: {
-    MENU_WIDTH: 56,
+    MENU_WIDTH: 64,
     FONT_SIZE: 8,
 
+    OUTSIDE_OUTER_LEFT_GAP: 3,
     OUTER_LEFT_GAP: 1,
     INNER_WIDTH: 49,
 
@@ -62,6 +63,22 @@ export const TetrisConstants = {
 
     // [L (White), I (Yellow), T (Cyan), Z (Green), S (Magenta), O (Red), J (Blue)]
     STATS_ORDER: [6, 0, 2, 4, 3, 1, 5],
+
+    R_INNER_WIDTH: 48,
+
+    HELP_TOP: 8,
+    HELP_HEIGHT: 114,
+    HELP_MARGIN: {
+      TOP: 8,
+    },
+
+    T_HEIGHT: 38,
+    T_LOGO_WIDTH: 32,
+    T_LOGO_HEIGHT: 26,
+
+    NEXT_CONTENT_PADDING: 4,
+    NEXT_CONTENT_HEIGHT: 41,
+    NEXT_DIAGONAL_HEIGHT: 16,
   },
 
   TRANSITION: {

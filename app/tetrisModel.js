@@ -81,7 +81,7 @@ export class TetrisModel extends AbstractModel {
     const lmY = 0;
     const lmH = this.desktopHeight;
 
-    const rmW = UI.MENU_WIDTH + 2;
+    const rmW = UI.MENU_WIDTH;
     const rmX = bdX + bdW + TetrisConstants.BOARD_GAP;
     const rmY = 0;
     const rmH = this.desktopHeight;

@@ -31,7 +31,7 @@ export class TetrisInfoEntity extends AbstractEntity {
     const UI = TetrisConstants.UI;
     const font = this.app.fonts.zxFonts8x8Mono;
 
-    const CONTENT_LEFT = UI.OUTER_LEFT_GAP + 2;
+    const CONTENT_LEFT = UI.OUTER_LEFT_GAP + UI.OUTSIDE_OUTER_LEFT_GAP + 3;
     const INNER_WHITE_LINE_X = CONTENT_LEFT + UI.INNER_WIDTH;
     const TOP_BOX_LABEL_X = INNER_WHITE_LINE_X - UI.TOP_BOX_WIDTH + UI.TOP_BOX_MARGIN.LEFT;
     const TOP_BOX_LABEL_Y = 2 + UI.TOP_BOX_MARGIN.TOP;
@@ -196,7 +196,7 @@ export class TetrisInfoEntity extends AbstractEntity {
       const UI = TetrisConstants.UI;
       const c = this.drawingCache[0];
 
-      const CONTENT_LEFT = UI.OUTER_LEFT_GAP + 2;
+      const CONTENT_LEFT = UI.OUTER_LEFT_GAP + UI.OUTSIDE_OUTER_LEFT_GAP + 3;
       const INNER_WHITE_LINE_X = CONTENT_LEFT + UI.INNER_WIDTH;
       const OUTER_RIGHT_GAP = UI.MENU_WIDTH - 1 - UI.INNER_WIDTH - UI.OUTER_LEFT_GAP - 2;
 
@@ -207,8 +207,8 @@ export class TetrisInfoEntity extends AbstractEntity {
 
       // OUTER BORDERS
       c.paint(0, 0, 1, this.height, UI.C_BORDER); // first left white
-      c.paint(1, 0, UI.OUTER_LEFT_GAP, this.height, UI.C_BG_CYAN); // cyan gap
-      c.paint(UI.OUTER_LEFT_GAP + 1, 0, 1, this.height, UI.C_BORDER); // second left white
+      c.paint(UI.OUTSIDE_OUTER_LEFT_GAP + 1, 0, 1, this.height, UI.C_BORDER); // second left white
+      c.paint(UI.OUTSIDE_OUTER_LEFT_GAP + UI.OUTER_LEFT_GAP + 2, 0, 1, this.height, UI.C_BORDER); // third left white
 
       c.paint(UI.MENU_WIDTH - 1, 0, 1, this.height, UI.C_BORDER); // most right white
 

@@ -43,13 +43,13 @@ export class TetrisBoardEntity extends AbstractEntity {
     if (stripBottom <= stripTop) return;
     const stripH = stripBottom - stripTop;
 
-    const leftGapWidth = this.fieldOffsetX - frameThickness - 1;
+    const leftGapWidth = this.fieldOffsetX - frameThickness;
     if (leftGapWidth > 0) {
-      this.app.layout.paint(this, 1, stripTop, leftGapWidth, stripH, ZXColor.brightCyan);
+      this.app.layout.paint(this, 0, stripTop, leftGapWidth, stripH, ZXColor.brightCyan);
     }
 
     const rightStripX = this.fieldOffsetX + this.fieldWidth + frameThickness;
-    const rightGapWidth = this.width - rightStripX - 1;
+    const rightGapWidth = this.width - rightStripX;
     if (rightGapWidth > 0) {
       this.app.layout.paint(this, rightStripX, stripTop, rightGapWidth, stripH, ZXColor.brightCyan);
     }
@@ -93,10 +93,10 @@ export class TetrisBoardEntity extends AbstractEntity {
 
     const bevelColor = ZXColor.brightCyan;
 
-    this.fillCornerBevel(this.leftMenuTR, frameTL, 1, bevelColor);
-    this.fillCornerBevel(this.leftMenuBR, frameBL, 1, bevelColor);
-    this.fillCornerBevel(this.rightMenuTL, frameTR, this.width - 1, bevelColor);
-    this.fillCornerBevel(this.rightMenuBR, frameBR, this.width - 1, bevelColor);
+    this.fillCornerBevel(this.leftMenuTR, frameTL, 0, bevelColor);
+    this.fillCornerBevel(this.leftMenuBR, frameBL, 0, bevelColor);
+    this.fillCornerBevel(this.rightMenuTL, frameTR, this.width, bevelColor);
+    this.fillCornerBevel(this.rightMenuBR, frameBR, this.width, bevelColor);
   } // drawWellBevel
 
   drawHighlights() {
