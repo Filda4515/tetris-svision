@@ -2,6 +2,8 @@
 .idea/
 
 config/config.php
+js
 
 run.bat
+windows_wrapper_build.bat
 router.php

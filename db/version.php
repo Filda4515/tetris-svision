@@ -1,7 +1,6 @@
 <?php
 
 class DataCommand {
-
    public function execute($postData) {
       $version = 'unknown';
       $source = file_get_contents('app/version.js');
@@ -10,5 +9,4 @@ class DataCommand {
       }
       return ['version' => $version];
    } // execute
-
 } // class DataCommand

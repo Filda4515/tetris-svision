@@ -11,6 +11,7 @@ import AudioScriptProcessorHandler from './svision/js/audio/audioScriptProcessor
 import AudioSilentHandler from './svision/js/audio/audioSilentHandler.js';
 import Tool from './svision/js/tool.js';
 /**/
+// begin code
 
 export class AudioManager extends AbstractAudioManager {
   constructor(app) {

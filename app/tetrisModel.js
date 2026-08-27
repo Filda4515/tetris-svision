@@ -234,7 +234,7 @@ export class TetrisModel extends AbstractModel {
     this.sendEvent(0, { id: 'playSound', bus: 'sounds', sound: 'dropSound', options: false });
     piece.destroy();
 
-    if (this.boardEntity.drawingCache?.[0]?.cleanCache) {
+    if (this.boardEntity.drawingCache && this.boardEntity.drawingCache[0] && this.boardEntity.drawingCache[0].cleanCache) {
       this.boardEntity.drawingCache[0].cleanCache();
     }
   } // lockPiece
@@ -288,7 +288,7 @@ export class TetrisModel extends AbstractModel {
 
       this.updateLinesAndLevel(linesCleared);
 
-      if (this.boardEntity.drawingCache?.[0]?.cleanCache) {
+      if (this.boardEntity.drawingCache && this.boardEntity.drawingCache[0] && this.boardEntity.drawingCache[0].cleanCache) {
         this.boardEntity.drawingCache[0].cleanCache();
       }
       this.drawModel();
