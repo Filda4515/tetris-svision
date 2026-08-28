@@ -48,6 +48,8 @@ export class GameApp extends AbstractApp {
     };
 
     this.fonts.zxFonts8x8Mono.addGlyphs('Σ', 'FE4020102040FE00');
+    this.fonts.zxFonts8x8Mono.addGlyphs('←→↑↓', '103070FE70301000080C0E7F0E0C080010387CFE10101000101010FE7C381000');
+    this.fonts.zxFonts8x8Mono.addGlyphs('◎', '7CC6829282C67C00');
 
     this.fonts.zxFonts8x8.addGlyphs('‗⋅', '000000000000F8F80000000030000000');
     this.fonts.zxFonts8x8.addGlyphs('➡', '00080CFEFE0C0800');

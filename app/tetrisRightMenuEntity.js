@@ -33,25 +33,44 @@ export class TetrisRightMenuEntity extends AbstractEntity {
       }),
     );
 
+    const helpText = 'I..←\nP..→\nO..◎\nS..?\nY..↑\nSP.↓\n\n QUIT';
+
+    this.addEntity(
+      new TextEntity(
+        this,
+        font,
+        CONTENT_LEFT,
+        UI.HELP_TOP + UI.FONT_SIZE * 2,
+        UI.FONT_SIZE * 6,
+        UI.FONT_SIZE * 8,
+        helpText,
+        ZXColor.brightWhite,
+        false,
+        {
+          align: 'center',
+        },
+      ),
+    );
+
     const NEXT_TOP = UI.HELP_TOP + UI.FONT_SIZE + UI.HELP_HEIGHT + 2;
     const NEXT_CONTENT_WIDTH = 4 * UI.FONT_SIZE;
-    const NEXT_CONTENT_X = CONTENT_LEFT + 1 + Math.floor((UI.R_INNER_WIDTH - 2)/ 2) - Math.floor(NEXT_CONTENT_WIDTH / 2)
+    const NEXT_CONTENT_X = CONTENT_LEFT + 1 + Math.floor((UI.R_INNER_WIDTH - 2) / 2) - Math.floor(NEXT_CONTENT_WIDTH / 2) - 1;
     const NEXT_CONTENT_Y = NEXT_TOP + UI.NEXT_CONTENT_PADDING;
 
     this.addEntity(
       new TextEntity(this, font, NEXT_CONTENT_X, NEXT_CONTENT_Y + 1, NEXT_CONTENT_WIDTH, UI.FONT_SIZE, 'NEXT', UI.C_LBL_FG, false, {
         align: 'center',
-      })
+      }),
     );
   } // init
 
   drawDiagonalUntilY(c, startX, startY, dirX, dirY, targetY, color) {
     const steps = Math.abs(targetY - startY);
-    
+
     for (let i = 0; i <= steps; i++) {
       const px = startX + i * dirX;
       const py = startY + i * dirY;
-      
+
       c.paint(px, py, 1, 1, color);
     }
     return startX + steps * dirX;
@@ -121,7 +140,7 @@ export class TetrisRightMenuEntity extends AbstractEntity {
       c.paint(CONTENT_RIGHT - 2, HELP_BOTTOM - 3, 1, 1, ZXColor.brightCyan);
 
       // T LOGO
-      const T_X = CONTENT_LEFT + Math.floor(UI.R_INNER_WIDTH / 2); 
+      const T_X = CONTENT_LEFT + Math.floor(UI.R_INNER_WIDTH / 2);
       const T_Y = T_TOP + 7;
 
       c.paint(T_X - UI.T_LOGO_WIDTH / 2, T_Y, UI.T_LOGO_WIDTH, 3, ZXColor.brightCyan); // top
@@ -150,7 +169,7 @@ export class TetrisRightMenuEntity extends AbstractEntity {
       c.paint(NEXT_LEFT, NEXT_TOP, UI.R_INNER_WIDTH, this.height - NEXT_TOP, UI.C_BG_CYAN); // cyan bg
 
       c.paint(CONTENT_LEFT - 1, NEXT_TOP, 1, NEXT_HEIGHT - UI.NEXT_DIAGONAL_HEIGHT, UI.C_BORDER); // left
-      
+
       c.paint(NEXT_RIGHT - 1, NEXT_TOP, 1, NEXT_HEIGHT - UI.NEXT_DIAGONAL_HEIGHT, UI.C_BG_BLACK); // right
 
       const NEXT_BOTTOM_LEFT = this.drawDiagonalUntilY(c, CONTENT_LEFT, NEXT_DIAGONAL_TOP - 1, 1, 1, this.height - 2, UI.C_BG_BLACK); // left diagonal
@@ -163,8 +182,8 @@ export class TetrisRightMenuEntity extends AbstractEntity {
       c.paint(NEXT_BOTTOM_LEFT, this.height - 2, NEXT_BOTTOM_RIGHT - NEXT_BOTTOM_LEFT + 1, 1, UI.C_BG_BLACK); // bottom
 
       // NEXT CONTENT BOX
-      const NEXT_CONTENT_WIDTH = 4 * UI.FONT_SIZE + 1;
-      const NEXT_CONTENT_X = NEXT_LEFT + Math.floor((UI.R_INNER_WIDTH - 2)/ 2) - Math.floor(NEXT_CONTENT_WIDTH / 2)
+      const NEXT_CONTENT_WIDTH = 4 * UI.FONT_SIZE + 2;
+      const NEXT_CONTENT_X = NEXT_LEFT + Math.floor((UI.R_INNER_WIDTH - 2) / 2) - Math.floor(NEXT_CONTENT_WIDTH / 2);
       const NEXT_CONTENT_Y = NEXT_TOP + UI.NEXT_CONTENT_PADDING;
 
       c.paint(NEXT_CONTENT_X, NEXT_CONTENT_Y, NEXT_CONTENT_WIDTH, 1, UI.C_BG_BLACK); // top
@@ -172,8 +191,14 @@ export class TetrisRightMenuEntity extends AbstractEntity {
       c.paint(NEXT_CONTENT_X + NEXT_CONTENT_WIDTH, NEXT_CONTENT_Y + 1, 1, UI.NEXT_CONTENT_HEIGHT, UI.C_BG_BLACK); // right
       c.paint(NEXT_CONTENT_X, NEXT_CONTENT_Y + UI.NEXT_CONTENT_HEIGHT, NEXT_CONTENT_WIDTH, 1, UI.C_BG_BLACK); // bottom
 
-      c.paint(NEXT_CONTENT_X + 1, NEXT_CONTENT_Y + 1, UI.FONT_SIZE * 4 - 1, UI.FONT_SIZE, UI.C_LBL_BG); // yellow label bg
-      c.paint(NEXT_CONTENT_X + 1, NEXT_CONTENT_Y + UI.FONT_SIZE + 1, NEXT_CONTENT_WIDTH - 2, UI.NEXT_CONTENT_HEIGHT - UI.FONT_SIZE - 2, UI.C_BG_BLACK); // black bg
+      c.paint(NEXT_CONTENT_X + 1, NEXT_CONTENT_Y + 1, UI.FONT_SIZE * 4, UI.FONT_SIZE, UI.C_LBL_BG); // yellow label bg
+      c.paint(
+        NEXT_CONTENT_X + 1,
+        NEXT_CONTENT_Y + UI.FONT_SIZE + 1,
+        NEXT_CONTENT_WIDTH - 2,
+        UI.NEXT_CONTENT_HEIGHT - UI.FONT_SIZE - 2,
+        UI.C_BG_BLACK,
+      ); // black bg
     }
 
     this.app.layout.paintCache(this, 0);

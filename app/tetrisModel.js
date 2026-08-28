@@ -50,6 +50,9 @@ export class TetrisModel extends AbstractModel {
 
     this.lastPieceIndex = null;
 
+    this.nextPieceIndex = null;
+    this.nextPieceEntity = null;
+
     this.score = 0;
     this.lines = 0;
     this.level = this.app.startLevel;
@@ -98,6 +101,8 @@ export class TetrisModel extends AbstractModel {
     this.rightMenuEntity = new TetrisRightMenuEntity(this.desktopEntity, rmX, rmY, rmW, rmH);
     this.desktopEntity.addEntity(this.rightMenuEntity);
 
+    this.nextPieceIndex = this.generateRandomPieceIndex();
+
     this.spawnNextPiece();
   } // init
 
@@ -110,24 +115,28 @@ export class TetrisModel extends AbstractModel {
     this.infoEntity.updateScore(this.score);
   } // addScore
 
-  spawnNextPiece() {
-    if (this.gameOver) return;
-
-    this.isFastDropping = false;
+  generateRandomPieceIndex() {
     let nextIndex = Math.floor(Math.random() * TETROMINOES_DATA.length);
     if (nextIndex === this.lastPieceIndex) {
       nextIndex = Math.floor(Math.random() * TETROMINOES_DATA.length);
     }
-
     this.lastPieceIndex = nextIndex;
+    return nextIndex;
+  }
 
-    this.statsCount[nextIndex]++;
+  spawnNextPiece() {
+    if (this.gameOver) return;
+
+    this.isFastDropping = false;
+
+    const currentIndex = this.nextPieceIndex;
+    this.statsCount[currentIndex]++;
     this.statsSum++;
     if (this.infoEntity) {
-      this.infoEntity.updateStats(nextIndex, this.statsCount[nextIndex], this.statsSum);
+      this.infoEntity.updateStats(currentIndex, this.statsCount[currentIndex], this.statsSum);
     }
 
-    const data = TETROMINOES_DATA[nextIndex];
+    const data = TETROMINOES_DATA[currentIndex];
     const initialMatrix = data.states[0];
     const matrixCols = initialMatrix[0].length;
 
@@ -136,13 +145,18 @@ export class TetrisModel extends AbstractModel {
 
     const tetEntity = new TetrominoEntity(this.boardEntity, spawnX, spawnY, data.states, data.color);
 
+    this.boardEntity.addEntity(tetEntity);
+
+    if (this.nextPieceEntity) {
+      this.nextPieceEntity.destroy();
+      this.nextPieceEntity = null;
+    }
+
     const testPiece = {
       gridX: spawnX,
       gridY: spawnY,
       currentMatrix: initialMatrix,
     };
-
-    this.boardEntity.addEntity(tetEntity);
 
     if (!this.canMove(testPiece, 0, 0)) {
       this.showGameOver('MainModel');
@@ -150,6 +164,35 @@ export class TetrisModel extends AbstractModel {
     }
 
     this.activePiece = tetEntity;
+
+    this.nextPieceIndex = this.generateRandomPieceIndex();
+    const nextData = TETROMINOES_DATA[this.nextPieceIndex];
+
+    const UI = TetrisConstants.UI;
+    const NEXT_LEFT = (UI.MENU_WIDTH - UI.R_INNER_WIDTH - 2) / 2 + 2;
+    const NEXT_CONTENT_WIDTH = 4 * UI.FONT_SIZE;
+    const NEXT_CONTENT_X = NEXT_LEFT + Math.floor((UI.R_INNER_WIDTH - 2) / 2) - Math.floor(NEXT_CONTENT_WIDTH / 2);
+    const NEXT_TOP = UI.HELP_TOP + UI.FONT_SIZE + UI.HELP_HEIGHT + 2;
+    const NEXT_CONTENT_Y = NEXT_TOP + UI.NEXT_CONTENT_PADDING + UI.FONT_SIZE * 2;
+
+    this.nextPieceEntity = new TetrominoEntity(this.rightMenuEntity, 0, 0, nextData.states, nextData.color);
+
+    this.nextPieceEntity.x = NEXT_CONTENT_X;
+    this.nextPieceEntity.y = NEXT_CONTENT_Y;
+
+    let blockIdx = 0;
+    const nMatrix = nextData.states[0];
+    for (let row = 0; row < nMatrix.length; row++) {
+      for (let col = 0; col < nMatrix[row].length; col++) {
+        if (nMatrix[row][col] === 1 && blockIdx < 4) {
+          this.nextPieceEntity.blocks[blockIdx].x = col * TetrisConstants.BLOCK_SIZE;
+          this.nextPieceEntity.blocks[blockIdx].y = row * TetrisConstants.BLOCK_SIZE;
+          blockIdx++;
+        }
+      }
+    }
+
+    this.rightMenuEntity.addEntity(this.nextPieceEntity);
   } // spawnNextPiece
 
   moveLeft() {

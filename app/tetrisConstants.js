@@ -104,7 +104,7 @@ export const TETROMINOES_DATA = [
         [0, 1, 0, 0],
       ],
     ],
-    color: ZXColor.brightYellow,
+    color: ZXColor.yellow,
   },
   {
     // O-tetromino
@@ -156,7 +156,7 @@ export const TETROMINOES_DATA = [
         [0, 0, 1],
       ],
     ],
-    color: ZXColor.brightMagenta,
+    color: ZXColor.magenta,
   },
   {
     // Z-tetromino
@@ -198,7 +198,7 @@ export const TETROMINOES_DATA = [
         [1, 1, 0],
       ],
     ],
-    color: ZXColor.brightBlue,
+    color: ZXColor.blue,
   },
   {
     // L-tetromino
@@ -224,7 +224,7 @@ export const TETROMINOES_DATA = [
         [0, 1, 0],
       ],
     ],
-    color: ZXColor.brightWhite,
+    color: ZXColor.white,
   },
 ];
 
