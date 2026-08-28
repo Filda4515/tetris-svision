@@ -32,7 +32,7 @@ export class GameApp extends AbstractApp {
     super(platform, 'bodyApp', importPath, wsURL);
 
     this.version = Version;
-    this.copyright = '©␣2026␣Filip␣Nevrala, CC␣BY⋅NC⋅SA';
+    this.copyright = '©␣2026␣Filip␣Nevřala, CC␣BY⋅NC⋅SA';
     this.devModeName = devModeName;
     this.appIconSprite = appIconSprite;
 
@@ -51,6 +51,7 @@ export class GameApp extends AbstractApp {
 
     this.fonts.zxFonts8x8.addGlyphs('‗⋅', '000000000000F8F80000000030000000');
     this.fonts.zxFonts8x8.addGlyphs('➡', '00080CFEFE0C0800');
+    this.fonts.zxFonts8x8.addGlyphs('Řř', '147C42427C4442000014081C20202000');
     this.fonts.zxFonts8x8.addSpace('␣', { width: 3, breaking: false, stretch: false });
 
     this.fonts.zxFonts8x8Keys.setFontsData(
@@ -58,6 +59,20 @@ export class GameApp extends AbstractApp {
     );
 
     this.fonts.fonts5x5.addGlyphs({
+      Ř: {
+        width: 5,
+        data: [
+          [1, -2, 1, 1],
+          [3, -2, 1, 1],
+          [2, -1, 1, 1],
+          [0, 0, 4, 1],
+          [0, 1, 1, 4],
+          [1, 2, 3, 1],
+          [4, 1, 1, 1],
+          [2, 3, 1, 1],
+          [3, 4, 2, 1],
+        ],
+      },
       'Ⓥ': {
         width: 3,
         data: [

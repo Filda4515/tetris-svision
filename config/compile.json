@@ -36,6 +36,7 @@
     "svision/js/platform/canvas2D/zxSpectrum/zxRemapKeysEntity.js",
     "svision/js/platform/canvas2D/zxSpectrum/zxSelectingGamepadEntity.js",
     "svision/js/platform/canvas2D/zxSpectrum/zxSettingsEntity.js",
+    "aboutEntity.js",
     "svision/js/platform/canvas2D/zxSpectrum/zxErrorEntity.js",
     "svision/js/platform/canvas2D/drawingCache.js",
     "tetrisConstants.js",

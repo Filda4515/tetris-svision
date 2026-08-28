@@ -1,4 +1,5 @@
 /**/
+const { AboutEntity } = await import('./aboutEntity.js?ver=' + window.srcVersion);
 const { AbstractEntity } = await import('./svision/js/abstractEntity.js?ver=' + window.srcVersion);
 const { AbstractModel } = await import('./svision/js/abstractModel.js?ver=' + window.srcVersion);
 const { ButtonEntity } = await import('./svision/js/platform/canvas2D/buttonEntity.js?ver='+window.srcVersion);
@@ -13,6 +14,7 @@ const { ZXWaitForAudioEventEntity } = await import(
   './svision/js/platform/canvas2D/zxSpectrum/zxWaitForAudioEventEntity.js?ver=' + window.srcVersion
 );
 /*/
+import AboutEntity from './aboutEntity.js';
 import AbstractEntity from './svision/js/abstractEntity.js';
 import AbstractModel from './svision/js/abstractModel.js';
 import ButtonEntity from './svision/js/platform/canvas2D/buttonEntity.js';
@@ -39,6 +41,7 @@ export class MenuModel extends AbstractModel {
       { t1: 'SOUNDS', event: { id: 'setSounds' } },
       { t1: 'MUSIC', event: { id: 'setMusic' } },
       { t1: 'SETTINGS', event: { id: 'setSettings' } },
+      { t1: 'ABOUT GAME', event: { id: 'showAbout' } },
     ];
 
     this.menuOptions = {
@@ -61,6 +64,9 @@ export class MenuModel extends AbstractModel {
       selectionClickColor: '#0a2277ff',
       selection: selectionItem || 0,
     };
+
+    this.dialogBkColor = ZXColor.brightBlue;
+    this.keyboardButtonsBkColor = ZXColor.brightWhite;
 
     this.versionEntity = null;
     this.newVersionAvailable = false;
@@ -147,7 +153,7 @@ export class MenuModel extends AbstractModel {
     switch (event.id) {
       case 'startGame':
         if (!this.app.playerName.length) {
-          this.desktopEntity.addModalEntity(new ZXPlayerNameEntity(this.desktopEntity, 27, 24, 202, 134, true));
+          this.desktopEntity.addModalEntity(new ZXPlayerNameEntity(this.desktopEntity, 27, 24, 202, 134, true, this.dialogBkColor, this.keyboardButtonsBkColor));
           return true;
         }
         if (this.app.inputEventsManager.needEventForAudio()) {
@@ -160,23 +166,26 @@ export class MenuModel extends AbstractModel {
         this.app.setModel('MainModel');
         return true;
       case 'setPlayerName':
-        this.desktopEntity.addModalEntity(new ZXPlayerNameEntity(this.desktopEntity, 27, 24, 202, 134, false));
+        this.desktopEntity.addModalEntity(new ZXPlayerNameEntity(this.desktopEntity, 27, 24, 202, 134, false, this.dialogBkColor, this.keyboardButtonsBkColor));
         return true;
       case 'showHallOfFame':
-        this.desktopEntity.addModalEntity(new HallOfFameEntity(this.desktopEntity, 27, 24, 202, 134));
+        this.desktopEntity.addModalEntity(new HallOfFameEntity(this.desktopEntity, 27, 24, 202, 134, this.dialogBkColor));
         return true;
       case 'setSounds':
         this.desktopEntity.addModalEntity(
-          new ZXVolumeEntity(this.desktopEntity, 27, 24, 202, 134, 'sounds', 'audioBusSoundsLevel', 'exampleJumpSound'),
+          new ZXVolumeEntity(this.desktopEntity, 27, 24, 202, 134, 'sounds', 'audioBusSoundsLevel', 'exampleJumpSound', this.dialogBkColor),
         );
         return true;
       case 'setMusic':
         this.desktopEntity.addModalEntity(
-          new ZXVolumeEntity(this.desktopEntity, 27, 24, 202, 134, 'music', 'audioBusMusicLevel', 'exampleInGameMelody'),
+          new ZXVolumeEntity(this.desktopEntity, 27, 24, 202, 134, 'music', 'audioBusMusicLevel', 'exampleInGameMelody', this.dialogBkColor),
         );
         return true;
       case 'setSettings':
-        this.desktopEntity.addModalEntity(new ZXSettingsEntity(this.desktopEntity, 27, 24, 202, 134, this.app.controlsOptions));
+        this.desktopEntity.addModalEntity(new ZXSettingsEntity(this.desktopEntity, 27, 24, 202, 134, this.app.controlsOptions, this.dialogBkColor));
+        return true;
+      case 'showAbout':
+        this.desktopEntity.addModalEntity(new AboutEntity(this.desktopEntity, 27, 24, 202, 134, this.dialogBkColor));
         return true;
       case 'upgradeApp':
         if (this.newVersionAvailable) {
